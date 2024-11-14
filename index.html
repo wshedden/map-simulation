@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive World Map</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+</head>
+<body>
+    <!-- Slider -->
+    <div id="slider-container">
+        <input type="range" id="slider" min="1970" max="2022" value="2022" step="1" title="Change the year" />
+        <span id="slider-value">Year: 2022</span>
+    </div>
+    <div id="map"></div>
+    <div id="tooltip" style="position: absolute; visibility: hidden; background-color: white; padding: 5px; border: 1px solid black; border-radius: 3px;"></div>
+    <script src="mapGame.js"></script>
+</body>
+</html>
