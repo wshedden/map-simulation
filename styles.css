@@ -43,3 +43,10 @@ th, td {
     padding: 8px;
     text-align: left;
 }
+
+#slider .noUi-connect {
+    background: #4CAF50; /* Change the color of the filled-in area */
+}
+#slider .noUi-handle {
+    background: #FF5722; /* Change the color of the handle */
+}

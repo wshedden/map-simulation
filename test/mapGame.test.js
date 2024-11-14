@@ -3,6 +3,7 @@
 // Use chai expect
 
 import { expect } from 'chai';
+import { updatePopulations } from '../mapGame.js'; // Adjust the import path as necessary
 
 describe('countryNameMapping', () => {
     const countryNameMapping = {
@@ -58,6 +59,79 @@ describe('populationData', () => {
         populationData.forEach(d => {
             console.log(`Population of ${d["Country/Territory"]} in 2022 is ${d["2022 Population"]} (not formatted)`);
             expect(populationDataMap.get(d["Country/Territory"])).not.to.equal(`${parseInt(d["2022 Population"]) / 1000000}M`);
+        });
+    });
+});
+
+describe('updatePopulations', () => {
+    const countries = [
+        { properties: { name: "United States" } },
+        { properties: { name: "DR Congo" } },
+        { properties: { name: "Dominican Republic" } },
+    ];
+
+    const populationDataMap = new Map([
+        ["United States", { "2022 Population": "330000000" }],
+        ["DR Congo", { "2022 Population": "95000000" }],
+        ["Dominican Republic", { "2022 Population": "11000000" }],
+    ]);
+
+    const countryNameMapping = {
+        "United States of America": "United States",
+        "Dem. Rep. Congo": "DR Congo",
+        "Dominican Rep.": "Dominican Republic",
+    };
+
+    let currentYear = 2022;
+
+    it('should update populations correctly for the current year', () => {
+        updatePopulations(countries, populationDataMap, countryNameMapping, currentYear);
+        countries.forEach(country => {
+            const countryName = country.properties.name;
+            const expectedPopulation = populationDataMap.get(countryName)[`${currentYear} Population`];
+            console.log(`Population of ${countryName} in ${currentYear} is ${expectedPopulation}`);
+            expect(country.properties.Population).to.equal(expectedPopulation);
+        });
+    });
+
+    it('should not update populations for countries not in the population data map', () => {
+        const newCountry = { properties: { name: "Nonexistent Country" } };
+        countries.push(newCountry);
+        updatePopulations(countries, populationDataMap, countryNameMapping, currentYear);
+        console.log(`Population of Nonexistent Country is ${newCountry.properties.Population}`);
+        expect(newCountry.properties.Population).to.be.undefined;
+    });
+});
+
+describe('updatePopulations for different year', () => {
+    // Set year to 1970
+    let currentYear = 1970;
+
+    const countries = [
+        { properties: { name: "United States" } },
+        { properties: { name: "DR Congo" } },
+        { properties: { name: "Dominican Republic" } },
+    ];
+
+    const populationDataMap = new Map([
+        ["United States", { "1970 Population": "205000000" }],
+        ["DR Congo", { "1970 Population": "20000000" }],
+        ["Dominican Republic", { "1970 Population": "4000000" }],
+    ]);
+
+    const countryNameMapping = {
+        "United States of America": "United States",
+        "Dem. Rep. Congo": "DR Congo",
+        "Dominican Rep.": "Dominican Republic",
+    };
+
+    it('should update populations correctly for the year 1970', () => {
+        updatePopulations(countries, populationDataMap, countryNameMapping, currentYear);
+        countries.forEach(country => {
+            const countryName = country.properties.name;
+            const expectedPopulation = populationDataMap.get(countryName)[`${currentYear} Population`];
+            console.log(`Population of ${countryName} in ${currentYear} is ${expectedPopulation}`);
+            expect(country.properties.Population).to.equal(expectedPopulation);
         });
     });
 });

@@ -1,3 +1,6 @@
+// Add this HTML below the slider element in your HTML file
+// <div id="slider-value"></div>
+
 // Set initial width and height based on the window size
 let width = window.innerWidth * 0.8; // Adjust width to fit within the container
 let height = window.innerHeight * 0.8; // Adjust height to fit within the container
@@ -27,8 +30,6 @@ function resize() {
     projection.translate([width / 2, height / 2]);
 
     // Redraw countries to fit new dimensions
-    svg.selectAll("path")
-        .attr("d", path);
 }
 
 // Call resize initially to set up the map
@@ -40,24 +41,11 @@ window.onresize = resize;
 // Variable to store the current year
 let currentYear = 2022;
 
-// Add a slider to control the year
-const slider = d3.select("#slider")
-    .on("input", function() {
-        currentYear = +this.value;
-        d3.select("#slider-value").text(`Year: ${currentYear}`);
-        updateDots();
-        updateTable();
-    });
-
 // Variables to store data
 let countries, populationDataMap, countryNameMapping;
 
-// Function to update dots based on the current year
-function updateDots() {
-    // Remove existing dots
-    svg.selectAll("circle").remove();
-
-    // Update population data for the current year
+// Function to update population data based on the current year
+function updatePopulations() {
     countries.forEach(country => {
         let countryName = country.properties.name;
         if (countryNameMapping[countryName]) {
@@ -67,6 +55,15 @@ function updateDots() {
             country.properties.Population = populationDataMap.get(countryName)[`${currentYear} Population`];
         }
     });
+}
+
+// Function to update dots based on the current year
+function updateDots() {
+    // Remove existing dots
+    svg.selectAll("circle").remove();
+
+    // Update population data for the current year
+    updatePopulations();
 
     // Add dots to each country
     countries.forEach(country => {
@@ -93,17 +90,6 @@ function updateDots() {
                 .attr("fill", "red");
         }
     });
-}
-
-// Function to update the table based on the current year
-function updateTable() {
-    rows.selectAll("td")
-        .data(d => [
-            d.properties.name, d.properties.Energy_type, d.properties.Year, d.properties.Energy_consumption,
-            d.properties.Energy_production, d.properties.GDP, d.properties.Population,
-            d.properties.Energy_intensity_per_capita, d.properties.Energy_intensity_by_GDP
-        ])
-        .text(d => d);
 }
 
 // Load and display world map data and energy data
@@ -149,45 +135,6 @@ Promise.all([
         }
     });
 
-    // Create popup graphic table for all the values that's scrollable
-    // Create a table to display country information
-    const tableContainer = d3.select("#table-container");
-    const table = tableContainer.append("table");
-    const thead = table.append("thead");
-    const tbody = table.append("tbody");
-
-    // Define table columns
-    const columns = [
-        "Country", "Energy_type", "Year", "Energy_consumption",
-        "Energy_production", "GDP", "Population",
-        "Energy_intensity_per_capita", "Energy_intensity_by_GDP"
-    ];
-
-    // Append table header
-    thead.append("tr")
-        .selectAll("th")
-        .data(columns)
-        .enter()
-        .append("th")
-        .text(d => d);
-
-    // Append table rows
-    const rows = tbody.selectAll("tr")
-        .data(countries)
-        .enter()
-        .append("tr");
-
-    // Append table cells
-    rows.selectAll("td")
-        .data(d => [
-            d.properties.name, d.properties.Energy_type, d.properties.Year, d.properties.Energy_consumption,
-            d.properties.Energy_production, d.properties.GDP, d.properties.Population,
-            d.properties.Energy_intensity_per_capita, d.properties.Energy_intensity_by_GDP
-        ])
-        .enter()
-        .append("td")
-        .text(d => d);
-
     svg.selectAll("path")
         .data(countries)
         .enter().append("path")
@@ -204,7 +151,48 @@ Promise.all([
             d3.select(this).style("fill", () => `hsl(${Math.random() * 360}, 70%, 70%)`);
         });
 
-    // Initial call to update dots and table
+    // Initialize noUiSlider
+    const slider = document.getElementById('slider');
+    noUiSlider.create(slider, {
+        start: [2022],
+        step: 1,
+        range: {
+            'min': [1970],
+            'max': [2022]
+        },
+        format: {
+            to: value => Math.round(value),
+            from: value => Math.round(value)
+        },
+        // Limit the accepted values to specific years
+        pips: {
+            mode: 'values',
+            values: [1970, 1980, 1990, 2000, 2010, 2015, 2020, 2022],
+            density: 10
+        }
+    });
+
+    // Override the default behavior to limit to specific years
+    slider.noUiSlider.on('slide', function (values, handle) {
+        const allowedYears = [1970, 1980, 1990, 2000, 2010, 2015, 2020, 2022];
+        const closest = allowedYears.reduce((prev, curr) => Math.abs(curr - values[handle]) < Math.abs(prev - values[handle]) ? curr : prev);
+        slider.noUiSlider.set(closest);
+    });
+
+    // Update currentYear and call updateDots on slider change
+    slider.noUiSlider.on('update', function (values, handle) {
+        currentYear = values[handle];
+        d3.select("#slider-value").text(`Year: ${currentYear}`);
+        updateDots();
+    });
+
+    // Initial call to update dots
     updateDots();
-    updateTable();
 });
+
+// export
+module.exports = {
+    resize,
+    updatePopulations,
+    updateDots
+};
