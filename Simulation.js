@@ -1,12 +1,12 @@
 import { updateMap } from './map.js';
 import { colorScale } from './utils.js';
-import { updateColours } from './data.js';
+import { topoJsonNameToCode } from './data.js';
 import { svg } from './map.js';
 
 export class Simulation {
     constructor(countryManager, countries) {
-        this.countryManager = countryManager;
-        this.countries = countries;
+        this.countryManager = countryManager; 
+        this.countries = countries; // This is countries in svg order
         this.numDays = 0;
         this.interval = null;
     }
@@ -39,9 +39,9 @@ export class Simulation {
         this.countries.forEach(country => {
             let countryName = country.properties.name;
             if (this.countryManager.countryMap.has(countryName)) {
-                // const countryData = this.countryManager.getCountry(countryName);
                 country.properties.Population = this.countryManager.getPopulation(country.properties.Code);
-                // console.log(`Country: ${countryName}, Population: ${country.properties.Population}`);
+                // Assign a random color to each country
+                country.properties.Color = this.getRandomColor();
             }
         });
 
@@ -49,10 +49,23 @@ export class Simulation {
         // updateColours(svg, this.countries, colorScale);
     }
 
+    getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
     runTimestep() {
-        console.log(`Running simulation for day ${this.numDays}`);
+        // console.log(`Running simulation for day ${this.numDays}`);
         
-        // 
+        // // Get the code from the name for "United States"
+        // const usa = this.countryManager.getCountryByName("Nepal");
+        // // Print all nepal data
+        // console.log(usa);
+
     }
 
     runSimulation() {
@@ -77,11 +90,24 @@ export class Simulation {
         // Logic to set up the simulation
         // This could involve setting up initial conditions, etc.
         // Make canada a vassal of the US
-        const canada = this.countryManager.getCountry("CA");
-        const usa = this.countryManager.getCountry("US");
-        const uk = this.countryManager.getCountry("GB");
+        const canada = this.countryManager.getCountryByCode("CA");
+        const usa = this.countryManager.getCountryByCode("US");
+        const uk = this.countryManager.getCountryByCode("GB");
         usa.addVassal(canada);
         uk.addVassal(usa);
+
+        // Go through all countries and try to print the code, so we go through countries list and turn it into codes using the data
+        this.countries.forEach(country => {
+            const countryCode = topoJsonNameToCode(country.properties.name, this.countryManager);
+            // If it doesnt exist, print the name
+            if (!countryCode) {
+                console.log(`Country: ${country.properties.name} not found in country manager.`);
+                return;
+            }
+            // If it does exist, print the code
+            // console.log(`Country: ${country.properties.name}, Code: ${countryCode}`);
+        }
+        );
 
         // Update the map to reflect the color changes
         updateMap(this.countries);

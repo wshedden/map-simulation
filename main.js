@@ -21,3 +21,6 @@ Promise.all([
     const simulation = new Simulation(countryManager, countries);
     simulation.runSimulation();
 });
+// Important to note: the countries object is from the countries.json file
+
+// W. Sahara, Antarctica, N. Cyprus, Somaliland, Kosovo are not in the population data

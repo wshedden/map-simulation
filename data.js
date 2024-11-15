@@ -83,3 +83,16 @@ export function printCountryBorders(countryCode) {
         });
     });
 }
+
+export function topoJsonNameToCode(name, countryManager) {
+    // Firstly check if the name is in the exceptions list
+    if (countryNameToCodeMapping[name]) {
+        return countryNameToCodeMapping[name];
+    }
+    // If not, search countrymanager
+    const country = countryManager.getCountryByName(name);
+    if (country) {
+        return country.countryCode;
+    }
+    return null;
+}

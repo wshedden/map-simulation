@@ -31,8 +31,13 @@ export class CountryManager {
         });
     }
 
-    getCountry(code) {
-        return this.countryMap.get(code);
+    getCountryByName(name) {
+        for (const country of this.countryMap.values()) {
+            if (country.name === name) {
+                return country;
+            }
+        }
+        return null;
     }
 
     getAllCountries() {
