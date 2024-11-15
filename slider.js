@@ -3,6 +3,7 @@ let setCurrentYear, getCurrentYear;
 export function setupSlider(setCurrentYear, getCurrentYear) {
     setCurrentYear = setCurrentYear;
     getCurrentYear = getCurrentYear;
+    // updatePopulationDisplay = updatePopulationDisplay;
     const slider = document.getElementById('slider');
     noUiSlider.create(slider, {
         start: [getCurrentYear()],
@@ -34,6 +35,7 @@ function autoScrollSlider(slider, setCurrentYear) {
         }
         slider.noUiSlider.set(year);
         setCurrentYear(year);
+        // updatePopulationDisplay();
         year++;
     }, 500);
 }

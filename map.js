@@ -1,9 +1,8 @@
-import { formatPopulation } from './utils.js';
 import { setCurrentYear, getCurrentYear } from './main.js';
 import { populationDataMap, countryNameMapping, countries } from './data.js';
+import {resize, updateDots, handleMouseOver, handleMouseOut, formatPopulation, colorScale} from './utils.js';
 
 export let svg, path, projection;
-let colorScale = d3.scaleSequential(d3.interpolateRgbBasis(["#fffffc", "#ffcccc", "#ff6666", "#ff0000", "#800080"]));
 
 
 export function initializeMap() {
@@ -20,8 +19,8 @@ export function initializeMap() {
 
     path = d3.geoPath().projection(projection);
 
-    resize();
-
+    resize(svg, projection);
+    
     svg.selectAll("path")
         .data(countries)
         .enter().append("path")
@@ -31,52 +30,26 @@ export function initializeMap() {
         .each(function(d) {
             d3.select(this).append("title").text(`${d.properties.name} - Population: ${d.properties.Population}`);
         })
-        .on("mouseover", function (event, d) {
-            d3.select(this).style("fill", "orange");
+        .on("mouseover", function(event, d) {
+            handleMouseOver(event, d, colorScale);
         })
-        .on("mouseout", function (event, d) {
-            d3.select(this).style("fill", colorScale(d.properties.Population));
+        .on("mouseout", function(event, d) {
+            handleMouseOut(event, d, colorScale)
         });
+    
 }
 
-export function resize() {
-    let width = window.innerWidth * 0.8;
-    let height = window.innerHeight * 0.8;
-
-    svg.attr("width", width).attr("height", height);
-    projection.translate([width / 2, height / 2]);
-}
-
-export function updateDots() {
-    svg.selectAll("circle").remove();
-    updatePopulations();
-
-    countries.forEach(country => {
-        const centroid = path.centroid(country);
-        const population = parseInt(country.properties.Population) || 0;
-        const scalingFactor = 0.00000001;
-        const numDots = Math.max(1, Math.round(population * scalingFactor));
-
-        const flowerCoordinates = generateFlowerCoordinates(centroid, numDots, 5, 15);
-
-        flowerCoordinates.forEach(coord => {
-            svg.append("circle")
-                .attr("cx", coord[0])
-                .attr("cy", coord[1])
-                .attr("r", 2)
-                .attr("fill", "darkred");
-        });
-    });
-}
 
 function generateFlowerCoordinates(center, numDots, innerRadius, outerRadius) {
     const coordinates = [];
-    const numRings = 3;
+    const numRings = 5;
     const radiusIncrement = (outerRadius - innerRadius) / (numRings - 1);
 
+    let remainingDots = numDots;
     for (let j = 0; j < numRings; j++) {
         const radius = innerRadius + j * radiusIncrement;
-        const dotsInRing = Math.max(3, Math.round(numDots * (j + 1) / numRings));
+        const maxDotsInRing = Math.max(3, Math.round((numDots * (j + 1)) / numRings));
+        const dotsInRing = Math.min(remainingDots, maxDotsInRing);
         const angleIncrement = (2 * Math.PI) / dotsInRing;
 
         for (let i = 0; i < dotsInRing; i++) {
@@ -85,12 +58,15 @@ function generateFlowerCoordinates(center, numDots, innerRadius, outerRadius) {
             const y = center[1] + radius * Math.sin(angle);
             coordinates.push([x, y]);
         }
+
+        remainingDots -= dotsInRing;
+        if (remainingDots <= 0) break;
     }
 
     return coordinates;
 }
 
-function updatePopulations() {
+export function updatePopulationDisplay() {
     let totalWorldPopulation = 0;
     populationDataMap.forEach(data => {
         totalWorldPopulation += parseInt(data[`${getCurrentYear()}`]) || 0;
@@ -119,3 +95,5 @@ function updatePopulations() {
 
     console.log(`Population data updated for year ${getCurrentYear()}`);
 }
+
+export {resize, updateDots, generateFlowerCoordinates}
