@@ -91,10 +91,10 @@ export class Simulation {
         usa.addVassal(canada);
         uk.addVassal(usa);
 
-        // For all countries print their bordering countries
-        this.countryManager.countryMap.forEach(country => {
-            country.printBorderingCountries();
-        });
+        // // For all countries print their bordering countries
+        // this.countryManager.countryMap.forEach(country => {
+        //     country.printBorderingCountries();
+        // });
 
         // Update the map to reflect the color changes
         updateMap(this.countries);

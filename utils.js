@@ -52,7 +52,6 @@ export function updateDots(svg, countries, path, generateFlowerCoordinates) {
 export function handleMouseOver(event, d, countryManager) {
     const countryCode = d.properties.Code;
     const countryDetails = countryManager.getCountryDetailsByCode(countryCode);
-
     if (!countryDetails || !countryDetails.Population) {
         return;
     }
@@ -60,6 +59,12 @@ export function handleMouseOver(event, d, countryManager) {
     d3.select(this).style("fill", "orange");
 
     const getValueOrNone = (value) => value !== undefined && value !== null ? value : "none";
+    const borderingCountries = countryDetails.borderingCountries
+        ? Array.from(countryDetails.borderingCountries).map(country => country.name).join(", ")
+        : "none";
+
+    console.log(countryDetails.borderingCountries);
+    
 
     const tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -76,7 +81,8 @@ export function handleMouseOver(event, d, countryManager) {
         Military Strength: ${getValueOrNone(countryDetails.MilitaryStrength)}<br>
         Wealth: ${getValueOrNone(countryDetails.Wealth)}<br>
         Vassals: ${getValueOrNone(countryDetails.Vassals)}<br>
-        Overlord: ${getValueOrNone(countryDetails.Overlord)}
+        Overlord: ${getValueOrNone(countryDetails.Overlord)}<br>
+        Bordering Countries: ${countryDetails.borderingCountries}
     `)
     .style("left", `${event.pageX + 10}px`)
     .style("top", `${event.pageY + 10}px`);

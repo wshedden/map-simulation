@@ -84,7 +84,8 @@ export class CountryManager {
             MilitaryStrength: country.militaryStrength,
             Wealth: country.wealth,
             Vassals: Array.from(country.vassals).map(vassal => vassal.name).join(", ") || "none",
-            Overlord: country.overlord ? country.overlord.name : "none"
+            Overlord: country.overlord ? country.overlord.name : "none",
+            borderingCountries: country.borderingCountries ? Array.from(country.borderingCountries).map(country => country.name).join(", ") : "none"
         };
     }
 
@@ -118,7 +119,7 @@ export class CountryManager {
             const countryCode1 = row.country_code;
             const countryCode2 = row.country_border_code;
 
-            console.log(`Processing row: ${countryCode1} - ${countryCode2}`);
+            // console.log(`Processing row: ${countryCode1} - ${countryCode2}`);
 
             if (countryCode1 && countryCode2) {
                 const country1 = this.getCountryByCode(countryCode1);
@@ -142,13 +143,13 @@ export class CountryManager {
                     country1.borderingCountries.add(country2);
                     country2.borderingCountries.add(country1);
 
-                    console.log(`Added border: ${country1.name} <-> ${country2.name}`);
+                    // console.log(`Added border: ${country1.name} <-> ${country2.name}`);
                 }
             } else {
-                console.log(`Invalid row: ${countryCode1} - ${countryCode2}`);
+                // console.log(`Invalid row: ${countryCode1} - ${countryCode2}`);
             }
         });
 
-        console.log("Finished updating bordering countries.");
+        // console.log("Finished updating bordering countries.");
     }
 }
