@@ -1,5 +1,4 @@
-// Add this HTML below the slider element in your HTML file
-// <div id="slider-value"></div>
+export { updatePopulations, currentYear, countries, populationDataMap, countryNameMapping, updateDots, resize, svg, path, projection };
 
 // Set initial width and height based on the window size
 let width = window.innerWidth * 0.8; // Adjust width to fit within the container
@@ -39,16 +38,27 @@ resize();
 window.onresize = resize;
 
 // Variable to store the current year
-let currentYear = 2022;
+let currentYear = 1970;
 
 // Variables to store data
-let countries, populationDataMap, countryNameMapping;
-// Define a color scale based on population
-const colorScale = d3.scaleSequential(d3.interpolateReds)
-    .domain([0, 1e8]); // Adjust the domain to make more countries redder
+let countries, countryNameMapping;
 
+// Make populationDataMap global
+let populationDataMap;
+
+// Define a color scale based on population
+let colorScale = d3.scaleSequential(d3.interpolateRgbBasis(["#fffffc", "#ffcccc", "#ff6666", "#ff0000", "#800080"]));
 // Function to update population data based on the current year
 function updatePopulations() {
+    // Calculate total world population for the current year
+    let totalWorldPopulation = 0;
+    populationDataMap.forEach(data => {
+        totalWorldPopulation += parseInt(data[`${currentYear}`]) || 0;
+    });
+
+    // Update the color scale domain based on the total world population
+    colorScale.domain([0, totalWorldPopulation/10]);
+
     // Update population data for each country
     countries.forEach(country => {
         let countryName = country.properties.name;
@@ -57,15 +67,19 @@ function updatePopulations() {
         }
         if (populationDataMap.has(countryName)) {
             country.properties.Population = populationDataMap.get(countryName)[`${currentYear}`];
+            country.properties.Code = populationDataMap.get(countryName)["country_code"];
         }
     });
+
+    // Tooltip format: "United Kingdom, GB, Population: 67.89M"
+    let title = d => `${d.properties.name}, ${d.properties.Code}, Population: ${formatPopulation(d.properties.Population)}`;
 
     // Update the map with new population data
     svg.selectAll("path")
         .data(countries)
         .attr("fill", d => colorScale(d.properties.Population))
         .select("title")
-        .text(d => `${d.properties.name} - Population: ${d.properties.Population}`);
+        .text(title);
 
     console.log(`Population data updated for year ${currentYear}`);
 }
@@ -78,31 +92,48 @@ function updateDots() {
     // Update population data for the current year
     updatePopulations();
 
-    // Add dots to each country
+    // Add flower-like dots to each country
     countries.forEach(country => {
-        const bounds = path.bounds(country);
-        const [x0, y0] = bounds[0];
-        const [x1, y1] = bounds[1];
+        const centroid = path.centroid(country);
 
         // Parse population as a number and define a scaling factor
         const population = parseInt(country.properties.Population) || 0;
-        const scalingFactor = 0.00000005; // Adjust this factor as needed
+        const scalingFactor = 0.00000001; // Adjust this factor as needed
         const numDots = Math.max(1, Math.round(population * scalingFactor)); // Ensure at least 1 dot
 
-        for (let i = 0; i < numDots; i++) {
-            let x, y;
-            do {
-                x = x0 + Math.random() * (x1 - x0);
-                y = y0 + Math.random() * (y1 - y0);
-            } while (!d3.geoContains(country, projection.invert([x, y])));
+        // Generate flower coordinates with a lower inner radius
+        const flowerCoordinates = generateFlowerCoordinates(centroid, numDots, 5, 15); // Lower inner radius and wider outer radius
 
+        flowerCoordinates.forEach(coord => {
             svg.append("circle")
-                .attr("cx", x)
-                .attr("cy", y)
+                .attr("cx", coord[0])
+                .attr("cy", coord[1])
                 .attr("r", 2)
-                .attr("fill", "red");
-        }
+                .attr("fill", "darkred"); // Increase the redness
+        });
     });
+}
+
+// Function to generate flower formation coordinates
+function generateFlowerCoordinates(center, numDots, innerRadius, outerRadius) {
+    const coordinates = [];
+    const numRings = 3; // Number of rings
+    const radiusIncrement = (outerRadius - innerRadius) / (numRings - 1);
+
+    for (let j = 0; j < numRings; j++) {
+        const radius = innerRadius + j * radiusIncrement;
+        const dotsInRing = Math.max(3, Math.round(numDots * (j + 1) / numRings)); // More dots in outer rings
+        const angleIncrement = (2 * Math.PI) / dotsInRing;
+
+        for (let i = 0; i < dotsInRing; i++) {
+            const angle = i * angleIncrement;
+            const x = center[0] + radius * Math.cos(angle);
+            const y = center[1] + radius * Math.sin(angle);
+            coordinates.push([x, y]);
+        }
+    }
+
+    return coordinates;
 }
 
 // Load and display world map data and energy data
@@ -188,22 +219,32 @@ Promise.all([
 
     // Initial call to update dots
     updateDots();
+
+    // Start auto-scrolling the slider
+    autoScrollSlider();
 });
 
-// export
-export { updatePopulations, currentYear, countries, populationDataMap, countryNameMapping, updateDots, resize, svg, path, projection };
 // Function to automatically scroll the slider
 function autoScrollSlider() {
     let year = 1970;
     const interval = setInterval(() => {
         if (year > 2022) {
-            clearInterval(interval);
-        } else {
-            slider.noUiSlider.set(year);
-            year++;
+            year = 1970; // Loop back to 1970
         }
-    }, 1000);
+        slider.noUiSlider.set(year);
+        year++;
+    }, 500); // Faster interval
 }
 
-// Start auto-scrolling the slider
-autoScrollSlider();
+// Function to format the population number from float to int with 2 decimal places like 1.23M or 4.56B or 71.89K
+function formatPopulation(population) {
+    if (population >= 1e9) {
+        return `${(population / 1e9).toFixed(2)}B`;
+    } else if (population >= 1e6) {
+        return `${(population / 1e6).toFixed(2)}M`;
+    } else if (population >= 1e3) {
+        return `${(population / 1e3).toFixed(2)}K`;
+    } else {
+        return population;
+    }
+}
