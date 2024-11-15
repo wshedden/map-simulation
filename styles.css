@@ -50,3 +50,10 @@ th, td {
 #slider .noUi-handle {
     background: #FF5722; /* Change the color of the handle */
 }
+
+/* Slider container */
+.slider-container {
+    width: 100%;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+}

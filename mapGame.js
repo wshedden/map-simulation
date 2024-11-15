@@ -43,18 +43,31 @@ let currentYear = 2022;
 
 // Variables to store data
 let countries, populationDataMap, countryNameMapping;
+// Define a color scale based on population
+const colorScale = d3.scaleSequential(d3.interpolateReds)
+    .domain([0, 1e8]); // Adjust the domain to make more countries redder
 
 // Function to update population data based on the current year
 function updatePopulations() {
+    // Update population data for each country
     countries.forEach(country => {
         let countryName = country.properties.name;
         if (countryNameMapping[countryName]) {
             countryName = countryNameMapping[countryName];
         }
         if (populationDataMap.has(countryName)) {
-            country.properties.Population = populationDataMap.get(countryName)[`${currentYear} Population`];
+            country.properties.Population = populationDataMap.get(countryName)[`${currentYear}`];
         }
     });
+
+    // Update the map with new population data
+    svg.selectAll("path")
+        .data(countries)
+        .attr("fill", d => colorScale(d.properties.Population))
+        .select("title")
+        .text(d => `${d.properties.name} - Population: ${d.properties.Population}`);
+
+    console.log(`Population data updated for year ${currentYear}`);
 }
 
 // Function to update dots based on the current year
@@ -96,7 +109,7 @@ function updateDots() {
 Promise.all([
     d3.json("countries.json"),
     d3.csv("countrydata.csv"),
-    d3.csv("populations.csv"),
+    d3.csv("populations_interpolated_with_codes.csv"),
     d3.csv("energy.csv")
 ]).then(([worldData, countryData, populationData, energyData]) => {
     countries = topojson.feature(worldData, worldData.objects.countries).features;
@@ -131,7 +144,7 @@ Promise.all([
             countryName = countryNameMapping[countryName];
         }
         if (populationDataMap.has(countryName)) {
-            country.properties.Population = populationDataMap.get(countryName)[`${currentYear} Population`];
+            country.properties.Population = populationDataMap.get(countryName)[`${currentYear}`];
         }
     });
 
@@ -140,21 +153,21 @@ Promise.all([
         .enter().append("path")
         .attr("class", "country")
         .attr("d", path)
-        .attr("fill", () => `hsl(${Math.random() * 360}, 70%, 70%)`)
+        .attr("fill", d => colorScale(d.properties.Population))
         .each(function(d) {
             d3.select(this).append("title").text(`${d.properties.name} - Population: ${d.properties.Population}`);
         })
         .on("mouseover", function (event, d) {
             d3.select(this).style("fill", "orange");
         })
-        .on("mouseout", function () {
-            d3.select(this).style("fill", () => `hsl(${Math.random() * 360}, 70%, 70%)`);
+        .on("mouseout", function (event, d) {
+            d3.select(this).style("fill", colorScale(d.properties.Population));
         });
 
     // Initialize noUiSlider
     const slider = document.getElementById('slider');
     noUiSlider.create(slider, {
-        start: [2022],
+        start: [1970],
         step: 1,
         range: {
             'min': [1970],
@@ -164,19 +177,6 @@ Promise.all([
             to: value => Math.round(value),
             from: value => Math.round(value)
         },
-        // Limit the accepted values to specific years
-        pips: {
-            mode: 'values',
-            values: [1970, 1980, 1990, 2000, 2010, 2015, 2020, 2022],
-            density: 10
-        }
-    });
-
-    // Override the default behavior to limit to specific years
-    slider.noUiSlider.on('slide', function (values, handle) {
-        const allowedYears = [1970, 1980, 1990, 2000, 2010, 2015, 2020, 2022];
-        const closest = allowedYears.reduce((prev, curr) => Math.abs(curr - values[handle]) < Math.abs(prev - values[handle]) ? curr : prev);
-        slider.noUiSlider.set(closest);
     });
 
     // Update currentYear and call updateDots on slider change
@@ -191,8 +191,19 @@ Promise.all([
 });
 
 // export
-module.exports = {
-    resize,
-    updatePopulations,
-    updateDots
-};
+export { updatePopulations, currentYear, countries, populationDataMap, countryNameMapping, updateDots, resize, svg, path, projection };
+// Function to automatically scroll the slider
+function autoScrollSlider() {
+    let year = 1970;
+    const interval = setInterval(() => {
+        if (year > 2022) {
+            clearInterval(interval);
+        } else {
+            slider.noUiSlider.set(year);
+            year++;
+        }
+    }, 1000);
+}
+
+// Start auto-scrolling the slider
+autoScrollSlider();

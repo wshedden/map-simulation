@@ -135,3 +135,82 @@ describe('updatePopulations for different year', () => {
         });
     });
 });
+describe('updateDots', () => {
+    const countries = [
+        { properties: { name: "United States" } },
+        { properties: { name: "DR Congo" } },
+        { properties: { name: "Dominican Republic" } },
+    ];
+
+    const populationDataMap = new Map([
+        ["United States", { "2022 Population": "330000000" }],
+        ["DR Congo", { "2022 Population": "95000000" }],
+        ["Dominican Republic", { "2022 Population": "11000000" }],
+    ]);
+
+    const countryNameMapping = {
+        "United States of America": "United States",
+        "Dem. Rep. Congo": "DR Congo",
+        "Dominican Rep.": "Dominican Republic",
+    };
+
+    let currentYear = 2022;
+
+    beforeEach(() => {
+        // Set up the SVG element
+        const svgElement = document.createElement('svg');
+        svgElement.setAttribute('id', 'map');
+        document.body.appendChild(svgElement);
+
+        // Initialize the SVG and other variables
+        svg = d3.select("#map").append("svg")
+            .attr("width", 800)
+            .attr("height", 600);
+
+        projection = d3.geoEqualEarth()
+            .scale(200)
+            .translate([400, 300]);
+
+        path = d3.geoPath().projection(projection);
+
+        // Set global variables
+        window.countries = countries;
+        window.populationDataMap = populationDataMap;
+        window.countryNameMapping = countryNameMapping;
+        window.currentYear = currentYear;
+    });
+
+    afterEach(() => {
+        // Clean up the SVG element
+        document.body.innerHTML = '';
+    });
+
+    it('should update dots correctly based on population data', () => {
+        updateDots();
+        const dots = svg.selectAll("circle").nodes();
+        expect(dots.length).to.be.greaterThan(0);
+
+        countries.forEach(country => {
+            const population = parseInt(populationDataMap.get(country.properties.name)[`${currentYear} Population`]);
+            const scalingFactor = 0.00000005;
+            const expectedNumDots = Math.max(1, Math.round(population * scalingFactor));
+            const countryDots = dots.filter(dot => {
+                const [x, y] = [dot.getAttribute('cx'), dot.getAttribute('cy')];
+                return d3.geoContains(country, projection.invert([x, y]));
+            });
+            expect(countryDots.length).to.equal(expectedNumDots);
+        });
+    });
+
+    it('should not add dots for countries with no population data', () => {
+        const newCountry = { properties: { name: "Nonexistent Country" } };
+        countries.push(newCountry);
+        updateDots();
+        const dots = svg.selectAll("circle").nodes();
+        const nonexistentCountryDots = dots.filter(dot => {
+            const [x, y] = [dot.getAttribute('cx'), dot.getAttribute('cy')];
+            return d3.geoContains(newCountry, projection.invert([x, y]));
+        });
+        expect(nonexistentCountryDots.length).to.equal(0);
+    });
+});
