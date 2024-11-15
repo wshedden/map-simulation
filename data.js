@@ -1,5 +1,23 @@
 export let countries, countryNameMapping, populationDataMap;
 
+const countryNameToCodeMapping = {
+    "United States of America": "US",
+    "Dem. Rep. Congo": "CD",
+    "Dominican Rep.": "DO",
+    "Falkland Is.": "FK",
+    "Fr. S. Antarctic Lands": "TF",
+    "Côte d'Ivoire": "CI",
+    "Central African Rep.": "CF",
+    "Congo": "CG",
+    "Eq. Guinea": "GQ",
+    "eSwatini": "SZ",
+    "Solomon Is.": "SB",
+    "Czechia": "CZ",
+    "Bosnia and Herz.": "BA",
+    "Macedonia": "MK",
+    "S. Sudan": "SS",
+    // Add more mappings as needed
+};
 
 export function loadData(worldData, countryData, populationData, energyData, currentYear) {
     countries = topojson.feature(worldData, worldData.objects.countries).features;
@@ -26,24 +44,24 @@ export function loadData(worldData, countryData, populationData, energyData, cur
     };
 
     countries.forEach(country => {
-        let countryName = country.properties.name;
-        if (countryNameMapping[countryName]) {
-            countryName = countryNameMapping[countryName];
+        let countryCode = country.properties.code;
+        if (countryNameToCodeMapping[country.properties.name]) {
+            countryCode = countryNameToCodeMapping[country.properties.name];
         }
-        if (populationDataMap.has(countryName)) {
-            country.properties.Population = populationDataMap.get(countryName)[`${currentYear}`];
+        if (populationDataMap.has(countryCode)) {
+            country.properties.Population = populationDataMap.get(countryCode)[`${currentYear}`];
         }
     });
 }
 
-export function updatePopulations(countries, populationDataMap, countryNameMapping, currentYear) {
+export function updatePopulations(countries, populationDataMap, countryNameToCodeMapping, currentYear) {
     countries.forEach(country => {
-        let countryName = country.properties.name;
-        if (countryNameMapping[countryName]) {
-            countryName = countryNameMapping[countryName];
+        let countryCode = country.properties.code;
+        if (countryNameToCodeMapping[country.properties.name]) {
+            countryCode = countryNameToCodeMapping[country.properties.name];
         }
-        if (populationDataMap.has(countryName)) {
-            country.properties.Population = populationDataMap.get(countryName)[`${currentYear}`];
+        if (populationDataMap.has(countryCode)) {
+            country.properties.Population = populationDataMap.get(countryCode)[`${currentYear}`];
         }
     });
 }
