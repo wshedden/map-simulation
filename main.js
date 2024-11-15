@@ -1,4 +1,4 @@
-import { initializeMap, updateDots, resize, generateFlowerCoordinates, svg, path, updatePopulationDisplay} from './map.js';
+import { initializeMap, updateDots, resize, generateFlowerCoordinates, svg, path, updatePopulationDisplay, projection} from './map.js';
 import { colorScale } from './utils.js';
 import { loadData , countries, updatePopulations, populationDataMap, countryNameMapping, updateColours, printCountryBorders} from './data.js';
 import { setupSlider } from './slider.js';
@@ -28,5 +28,5 @@ Promise.all([
     updatePopulationDisplay();
     updateDots(svg, countries, path, generateFlowerCoordinates);
     setupSlider(setCurrentYear, getCurrentYear);
-    printCountryBorders("US");
+    printCountryBorders("AF");
 });

@@ -31,7 +31,7 @@ export function initializeMap() {
             d3.select(this).append("title").text(`${d.properties.name} - Population: ${d.properties.Population}`);
         })
         .on("mouseover", function(event, d) {
-            handleMouseOver(event, d, colorScale);
+            handleMouseOver(event, d);
         })
         .on("mouseout", function(event, d) {
             handleMouseOut(event, d, colorScale)

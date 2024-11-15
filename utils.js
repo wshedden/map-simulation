@@ -42,7 +42,7 @@ export function updateDots(svg, countries, path, generateFlowerCoordinates) {
     });
 }
 
-export function handleMouseOver(event, d, colorScale) {
+export function handleMouseOver(event, d) {
     d3.select(this).style("fill", "orange");
 }
 
