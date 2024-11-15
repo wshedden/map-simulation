@@ -2,7 +2,7 @@
     "name": "mapgame",
     "version": "1.0.0",
     "description": "A map game project",
-    "main": "mapGame.js",
+    "main": "main.js",
     "type": "module",
     "scripts": {
         "test": "mocha"
