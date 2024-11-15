@@ -9,7 +9,7 @@ const countryManager = new CountryManager();
 window.onresize = () => resize(svg, projection);
 
 Promise.all([
-    d3.json("countries.json"),
+    d3.json("countries_no_disputed.json"),
     d3.csv("countrydata.csv"),
     d3.csv("populations_interpolated_with_codes.csv"),
     d3.csv("energy.csv")

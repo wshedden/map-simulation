@@ -6,7 +6,6 @@ const countryNameToCodeMapping = {
     "Dominican Rep.": "DO",
     "Falkland Is.": "FK",
     "Fr. S. Antarctic Lands": "TF",
-    "Côte d'Ivoire": "CI",
     "Central African Rep.": "CF",
     "Congo": "CG",
     "Eq. Guinea": "GQ",
@@ -16,7 +15,7 @@ const countryNameToCodeMapping = {
     "Bosnia and Herz.": "BA",
     "Macedonia": "MK",
     "S. Sudan": "SS",
-    // Add more mappings as needed
+    "CÃ´te d'Ivoire": "CI"
 };
 
 export function loadData(worldData, countryData, populationData, energyData, currentYear) {
@@ -41,6 +40,7 @@ export function loadData(worldData, countryData, populationData, energyData, cur
         "Macedonia": "North Macedonia",
         "S. Sudan": "South Sudan",
         // Add more mappings as needed
+        "CÃ´te d'Ivoire": "Ivory Coast"
     };
 
     countries.forEach(country => {
