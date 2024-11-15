@@ -4,7 +4,7 @@ export class CountryManager {
     constructor() {
         this.countryMap = new Map();
     }
-    loadCountries(populationData) {
+    loadCountries(populationData, borderData) {
         /* name is Country/Territory, population is 2022, country_code is country_code */
 
         populationData.forEach(data => {
@@ -28,7 +28,11 @@ export class CountryManager {
 
             this.countryMap.set(countryCode, country);
             // console.log(`Country ${name} loaded and added to countryMap.`);
+
+
         });
+
+        this.updateBorderingCountries(borderData);
     }
 
     getCountryByName(name) {
@@ -105,5 +109,46 @@ export class CountryManager {
             totalPopulation += country.population;
         });
         return totalPopulation;
+    }
+
+    updateBorderingCountries(borderData) {
+        console.log("Starting to update bordering countries...");
+
+        borderData.forEach(row => {
+            const countryCode1 = row.country_code;
+            const countryCode2 = row.country_border_code;
+
+            console.log(`Processing row: ${countryCode1} - ${countryCode2}`);
+
+            if (countryCode1 && countryCode2) {
+                const country1 = this.getCountryByCode(countryCode1);
+                const country2 = this.getCountryByCode(countryCode2);
+
+                if (!country1) {
+                    console.log(`Country with code ${countryCode1} not found.`);
+                }
+                if (!country2) {
+                    console.log(`Country with code ${countryCode2} not found.`);
+                }
+
+                if (country1 && country2) {
+                    if (!country1.borderingCountries) {
+                        country1.borderingCountries = new Set();
+                    }
+                    if (!country2.borderingCountries) {
+                        country2.borderingCountries = new Set();
+                    }
+
+                    country1.borderingCountries.add(country2);
+                    country2.borderingCountries.add(country1);
+
+                    console.log(`Added border: ${country1.name} <-> ${country2.name}`);
+                }
+            } else {
+                console.log(`Invalid row: ${countryCode1} - ${countryCode2}`);
+            }
+        });
+
+        console.log("Finished updating bordering countries.");
     }
 }

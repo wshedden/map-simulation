@@ -72,7 +72,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 1000); // Increment every second
+        }, 5000); // Increment every 5 seconds
     }
 
     stopSimulation() {
@@ -91,18 +91,10 @@ export class Simulation {
         usa.addVassal(canada);
         uk.addVassal(usa);
 
-        // Go through all countries and try to print the code, so we go through countries list and turn it into codes using the data
-        this.countries.forEach(country => {
-            const countryCode = topoJsonNameToCode(country.properties.name, this.countryManager);
-            // If it doesnt exist, print the name
-            if (!countryCode) {
-                console.log(`Country: ${country.properties.name} not found in country manager.`);
-                return;
-            }
-            // If it does exist, print the code
-            // console.log(`Country: ${country.properties.name}, Code: ${countryCode}`);
-        }
-        );
+        // For all countries print their bordering countries
+        this.countryManager.countryMap.forEach(country => {
+            country.printBorderingCountries();
+        });
 
         // Update the map to reflect the color changes
         updateMap(this.countries);

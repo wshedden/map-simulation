@@ -94,6 +94,11 @@ class Country {
     setWealth(wealth) {
         this.wealth = wealth;
     }
+
+    printBorderingCountries() {
+        console.log(`Bordering countries of ${this.name}:`);
+        this.borderingCountries.forEach(country => console.log(country.name));
+    }
 }
 
 export { Country };

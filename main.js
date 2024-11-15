@@ -12,10 +12,11 @@ Promise.all([
     d3.json("countries_no_disputed.json"),
     d3.csv("countrydata.csv"),
     d3.csv("populations_interpolated_with_codes.csv"),
-    d3.csv("energy.csv")
-]).then(([worldData, countryData, populationData, energyData]) => {
+    d3.csv("energy.csv"),
+    d3.csv("borders.csv")
+]).then(([worldData, countryData, populationData, energyData, borderData]) => {
     loadData(worldData, countryData, populationData, energyData, 2022);
-    countryManager.loadCountries(populationData);
+    countryManager.loadCountries(populationData, borderData);
     initializeMap(countries, countryManager);
 
     const simulation = new Simulation(countryManager, countries);
