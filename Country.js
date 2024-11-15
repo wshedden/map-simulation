@@ -9,6 +9,7 @@ class Country {
         this.population = 0; // Population
         this.militaryStrength = 0; // Military strength
         this.wealth = 0; // Wealth
+        this.borderingCountries = new Set(); // Set of countries that border this country
     }
 
     setRuler(ruler) {

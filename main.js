@@ -16,7 +16,7 @@ Promise.all([
 ]).then(([worldData, countryData, populationData, energyData]) => {
     loadData(worldData, countryData, populationData, energyData, 1970);
     countryManager.loadCountries(populationData);
-    initializeMap(countries);
+    initializeMap(countries, countryManager);
 
     const simulation = new Simulation(countryManager, countries);
     simulation.runSimulation();

@@ -42,10 +42,35 @@ export function updateDots(svg, countries, path, generateFlowerCoordinates) {
     });
 }
 
-export function handleMouseOver(event, d) {
+export function handleMouseOver(event, d, countryManager) {
     d3.select(this).style("fill", "orange");
+
+    const countryCode = d.properties.Code;
+    const countryDetails = countryManager.getCountryDetailsByCode(countryCode);
+
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("border", "1px solid black")
+        .style("padding", "5px")
+        .style("pointer-events", "none");
+
+    tooltip.html(`
+        <strong>${countryDetails.name}</strong><br>
+        Country Code: ${countryDetails.Code}<br>
+        Population: ${formatPopulation(countryDetails.Population)}<br>
+        Military Strength: ${countryDetails.MilitaryStrength}<br>
+        Wealth: ${countryDetails.Wealth}
+    `)
+    .style("left", `${event.pageX + 10}px`)
+    .style("top", `${event.pageY + 10}px`);
 }
 
-export function handleMouseOut(event, d, colorScale) {
-    d3.select(this).style("fill", colorScale(d.properties.Population));
+export function handleMouseOut(event, d, colorScale, countryManager) {
+    const countryCode = d.properties.Code;
+    const countryDetails = countryManager.getCountryDetailsByCode(countryCode);
+
+    d3.select(this).style("fill", colorScale(countryDetails.Population));
+    d3.select(".tooltip").remove();
 }

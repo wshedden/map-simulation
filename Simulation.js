@@ -46,13 +46,11 @@ export class Simulation {
         });
 
         updateMap(this.countries);
-        console.log(`Population data updated for day ${this.getNumDays()}`);
     }
 
     runTimestep() {
         // Logic to run a single timestep in the simulation
         // This could involve updating country relationships, handling invasions, etc.
-        console.log(`Running timestep for day ${this.numDays}`);
     }
 
     runSimulation() {

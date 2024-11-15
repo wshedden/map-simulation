@@ -3,8 +3,7 @@ import {resize, updateDots, handleMouseOver, handleMouseOut, formatPopulation, c
 
 export let svg, path, projection;
 
-
-export function initializeMap() {
+export function initializeMap(countries, countryManager) {
     let width = window.innerWidth * 0.8;
     let height = window.innerHeight * 0.8;
 
@@ -19,25 +18,32 @@ export function initializeMap() {
     path = d3.geoPath().projection(projection);
 
     resize(svg, projection);
-    
+
+    countries.forEach(country => {
+        let countryName = country.properties.name;
+        if (countryNameMapping[countryName]) {
+            countryName = countryNameMapping[countryName];
+        }
+        if (populationDataMap.has(countryName)) {
+            country.properties.Population = populationDataMap.get(countryName)[`2022`];
+            country.properties.Code = populationDataMap.get(countryName)["country_code"];
+        }
+    });
+
     svg.selectAll("path")
         .data(countries)
         .enter().append("path")
         .attr("class", "country")
         .attr("d", path)
         .attr("fill", d => colorScale(d.properties.Population))
-        .each(function(d) {
-            d3.select(this).append("title").text(`${d.properties.name} - Population: ${d.properties.Population}`);
-        })
+        .attr("data-code", d => d.properties.Code) // Add the code attribute here
         .on("mouseover", function(event, d) {
-            handleMouseOver(event, d);
+            handleMouseOver(event, d, countryManager);
         })
         .on("mouseout", function(event, d) {
-            handleMouseOut(event, d, colorScale)
+            handleMouseOut(event, d, colorScale, countryManager);
         });
-    
 }
-
 
 function generateFlowerCoordinates(center, numDots, innerRadius, outerRadius) {
     const coordinates = [];
