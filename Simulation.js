@@ -1,5 +1,7 @@
 import { updateMap } from './map.js';
 import { colorScale } from './utils.js';
+import { updateColours } from './data.js';
+import { svg } from './map.js';
 
 export class Simulation {
     constructor(countryManager, countries) {
@@ -21,8 +23,6 @@ export class Simulation {
     updateCountries() {
         const countries = this.countryManager.getAllCountries();
         countries.forEach(country => {
-            // Update country properties based on the number of days
-            // For example, update population, military strength, wealth, etc.
         });
 
         this.updatePopulationDisplay();
@@ -39,30 +39,32 @@ export class Simulation {
         this.countries.forEach(country => {
             let countryName = country.properties.name;
             if (this.countryManager.countryMap.has(countryName)) {
-                const countryData = this.countryManager.getCountry(countryName);
-                country.properties.Population = countryData.population;
-                country.properties.Code = countryData.countryCode;
+                // const countryData = this.countryManager.getCountry(countryName);
+                country.properties.Population = this.countryManager.getPopulation(country.properties.Code);
+                // console.log(`Country: ${countryName}, Population: ${country.properties.Population}`);
             }
         });
 
         updateMap(this.countries);
+        // updateColours(svg, this.countries, colorScale);
     }
 
     runTimestep() {
-        // Logic to run a single timestep in the simulation
-        // This could involve updating country relationships, handling invasions, etc.
+        console.log(`Running simulation for day ${this.numDays}`);
+        
+        // 
     }
 
     runSimulation() {
         // Logic to run the entire simulation
         // This could involve running multiple timesteps, updating the display, etc.
-        this.countryManager.printCountries();
+        this.initialiseSimulation();
         this.updateCountries();
         this.interval = setInterval(() => {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 500); // Increment every half a second
+        }, 1000); // Increment every second
     }
 
     stopSimulation() {
@@ -70,4 +72,19 @@ export class Simulation {
             clearInterval(this.interval);
         }
     }
+
+    initialiseSimulation() {
+        // Logic to set up the simulation
+        // This could involve setting up initial conditions, etc.
+        // Make canada a vassal of the US
+        const canada = this.countryManager.getCountry("CA");
+        const usa = this.countryManager.getCountry("US");
+        const uk = this.countryManager.getCountry("GB");
+        usa.addVassal(canada);
+        uk.addVassal(usa);
+
+    }
+
+
 }
+

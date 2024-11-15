@@ -1,5 +1,12 @@
-export const colorScale = d3.scaleSequential(d3.interpolateRgbBasis(["#fffffc", "#ffcccc", "#ff6666", "#ff0000", "#800080"]));
-
+export const colorScale = d3.scaleSequential(d3.interpolateRgbBasis([
+    "#ffffff", //
+    "#ff0000", // Red for low population
+    "#ffff00", // Yellow for low-mid population
+    "#00ff00", // Green for mid population
+    "#00ffff", // Cyan for mid-high population
+    "#0000ff", // Blue for high population
+    "#800080"  // Purple for the highest population
+]));
 export function formatPopulation(population) {
     if (population >= 1e9) {
         return `${(population / 1e9).toFixed(2)}B`;
@@ -44,9 +51,10 @@ export function updateDots(svg, countries, path, generateFlowerCoordinates) {
 
 export function handleMouseOver(event, d, countryManager) {
     d3.select(this).style("fill", "orange");
-
     const countryCode = d.properties.Code;
     const countryDetails = countryManager.getCountryDetailsByCode(countryCode);
+
+    const getValueOrNone = (value) => value !== undefined && value !== null ? value : "none";
 
     const tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -57,19 +65,25 @@ export function handleMouseOver(event, d, countryManager) {
         .style("pointer-events", "none");
 
     tooltip.html(`
-        <strong>${countryDetails.name}</strong><br>
-        Country Code: ${countryDetails.Code}<br>
-        Population: ${formatPopulation(countryDetails.Population)}<br>
-        Military Strength: ${countryDetails.MilitaryStrength}<br>
-        Wealth: ${countryDetails.Wealth}
+        <strong>${getValueOrNone(countryDetails.name)}</strong><br>
+        Country Code: ${getValueOrNone(countryDetails.Code)}<br>
+        Population: ${getValueOrNone(formatPopulation(countryDetails.Population))}<br>
+        Military Strength: ${getValueOrNone(countryDetails.MilitaryStrength)}<br>
+        Wealth: ${getValueOrNone(countryDetails.Wealth)}<br>
+        Vassals: ${getValueOrNone(countryDetails.Vassals)}<br>
+        Overlord: ${getValueOrNone(countryDetails.Overlord)}
     `)
     .style("left", `${event.pageX + 10}px`)
     .style("top", `${event.pageY + 10}px`);
 }
 
-export function handleMouseOut(event, d, colorScale, countryManager) {
+export function handleMouseOut(event, d, countryManager) {
     const countryCode = d.properties.Code;
     const countryDetails = countryManager.getCountryDetailsByCode(countryCode);
+
+    if (!countryDetails.Population) {
+        return;
+    }
 
     d3.select(this).style("fill", colorScale(countryDetails.Population));
     d3.select(".tooltip").remove();

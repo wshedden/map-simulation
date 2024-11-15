@@ -14,7 +14,7 @@ Promise.all([
     d3.csv("populations_interpolated_with_codes.csv"),
     d3.csv("energy.csv")
 ]).then(([worldData, countryData, populationData, energyData]) => {
-    loadData(worldData, countryData, populationData, energyData, 1970);
+    loadData(worldData, countryData, populationData, energyData, 2022);
     countryManager.loadCountries(populationData);
     initializeMap(countries, countryManager);
 

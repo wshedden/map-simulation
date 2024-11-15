@@ -26,13 +26,13 @@ export class CountryManager {
             country.setMilitaryStrength(militaryStrength);
             country.setWealth(wealth);
 
-            this.countryMap.set(name, country);
+            this.countryMap.set(countryCode, country);
             console.log(`Country ${name} loaded and added to countryMap.`);
         });
     }
 
-    getCountry(name) {
-        return this.countryMap.get(name);
+    getCountry(code) {
+        return this.countryMap.get(code);
     }
 
     getAllCountries() {
@@ -48,24 +48,56 @@ export class CountryManager {
 
     printCountries() {
         console.log("List of countries:");
-        this.countryMap.forEach((country, name) => {
-            console.log(`Name: ${name}, Code: ${country.countryCode}, Population: ${country.population}, Military Strength: ${country.militaryStrength}, Wealth: ${country.wealth}`);
+        this.countryMap.forEach((country, code) => {
+            console.log(`Name: ${country.name}, Code: ${code}, Population: ${country.population}, Military Strength: ${country.militaryStrength}, Wealth: ${country.wealth}`);
         });
     }
 
     getCountryByCode(code) {
-        // Print if not successful
-        return Array.from(this.countryMap.values()).find(country => country.countryCode === code);
+        // Print code if not found
+        if (!this.countryMap.has(code)) {
+            console.log(`Country with code ${code} not found.`);
+            throw new Error(`Country with code ${code} not found.`);
+        }
+        return this.countryMap.get(code);
     }
 
     getCountryDetailsByCode(code) {
         const country = this.getCountryByCode(code);
+        if (!country) {
+            return {};
+        }
         return {
             name: country.name,
             Code: country.countryCode,
             Population: country.population,
             MilitaryStrength: country.militaryStrength,
-            Wealth: country.wealth
+            Wealth: country.wealth,
+            Vassals: Array.from(country.vassals).map(vassal => vassal.name).join(", ") || "none",
+            Overlord: country.overlord ? country.overlord.name : "none"
         };
+    }
+
+    setCountryPopulation(code, newPopulation) {
+        const country = this.getCountryByCode(code);
+        if (country) {
+            country.setPopulation(newPopulation);
+        }
+    }
+
+    getPopulation(code) {
+        const country = this.getCountryByCode(code);
+        if (country) {
+            return country.population;
+        }
+        return 0;
+    }
+
+    getWorldPopulation() {  // Returns the total population of all countries
+        let totalPopulation = 0;
+        this.countryMap.forEach(country => {
+            totalPopulation += country.population;
+        });
+        return totalPopulation;
     }
 }

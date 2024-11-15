@@ -1,5 +1,5 @@
 import { populationDataMap, countryNameMapping, countries } from './data.js';
-import {resize, updateDots, handleMouseOver, handleMouseOut, formatPopulation, colorScale} from './utils.js';
+import { resize, updateDots, handleMouseOver, handleMouseOut } from './utils.js';
 
 export let svg, path, projection;
 
@@ -28,6 +28,14 @@ export function initializeMap(countries, countryManager) {
             country.properties.Population = populationDataMap.get(countryName)[`2022`];
             country.properties.Code = populationDataMap.get(countryName)["country_code"];
         }
+        // Use the two-digit country code for countryManager
+        const countryCode = country.properties.Code;
+        // If theres no code don't do this
+        if (!countryCode) return;
+        console.log(`Country: ${country.properties.name}, Code: ${countryCode}`);
+        if (countryManager.getCountryByCode(countryCode)) {
+            country.properties.Color = countryManager.getCountryByCode(countryCode).color;
+        }
     });
 
     svg.selectAll("path")
@@ -35,13 +43,13 @@ export function initializeMap(countries, countryManager) {
         .enter().append("path")
         .attr("class", "country")
         .attr("d", path)
-        .attr("fill", d => colorScale(d.properties.Population))
-        .attr("data-code", d => d.properties.Code) // Add the code attribute here
+        .attr("fill", d => d.properties.Color)
+        .attr("data-code", d => d.properties.Code)
         .on("mouseover", function(event, d) {
             handleMouseOver(event, d, countryManager);
         })
         .on("mouseout", function(event, d) {
-            handleMouseOut(event, d, colorScale, countryManager);
+            handleMouseOut(event, d, countryManager);
         });
 }
 
@@ -72,12 +80,9 @@ function generateFlowerCoordinates(center, numDots, innerRadius, outerRadius) {
 }
 
 export function updatePopulationDisplay() {
-    let totalWorldPopulation = 0;
-    populationDataMap.forEach(data => {
-        totalWorldPopulation += parseInt(data[`${getCurrentYear()}`]) || 0;
-    });
+    let totalWorldPopulation = countryManager.getWorldPopulation();
 
-    colorScale.domain([0, totalWorldPopulation / 10]);
+    colorScale.domain([0, totalWorldPopulation / 2]);
 
     countries.forEach(country => {
         let countryName = country.properties.name;
@@ -101,12 +106,12 @@ export function updatePopulationDisplay() {
     console.log(`Population data updated for year ${getCurrentYear()}`);
 }
 
-function updateMap(countries) {
+export function updateMap(countries) {
     svg.selectAll("path")
         .data(countries)
-        .attr("fill", d => colorScale(d.properties.Population))
+        .attr("fill", d => d.properties.Color)
         .select("title")
         .text(d => `${d.properties.name} - Population: ${d.properties.Population}`);
 }
 
-export {resize, updateDots, generateFlowerCoordinates, updateMap}
+export { resize, updateDots, generateFlowerCoordinates };

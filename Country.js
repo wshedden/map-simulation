@@ -1,19 +1,29 @@
 class Country {
     constructor(name) {
         this.name = name;
-        this.ruler = null; // The ruler of this country
-        this.vassals = new Set(); // Set of vassal countries
-        this.overlord = null; // The overlord of this country
-        this.isVassal = false; // Boolean indicating if this country is a vassal
-        this.countryCode = null; // Country code
-        this.population = 0; // Population
-        this.militaryStrength = 0; // Military strength
-        this.wealth = 0; // Wealth
-        this.borderingCountries = new Set(); // Set of countries that border this country
+        this.ruler = null;
+        this.vassals = new Set();
+        this.overlord = null;
+        this.isVassal = false;
+        this.countryCode = null;
+        this.population = 0;
+        this.militaryStrength = 0;
+        this.wealth = 0;
+        this.borderingCountries = new Set();
+        this.color = this.getRandomColor();
     }
 
-    setRuler(ruler) {
-        this.ruler = ruler;
+    getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    setColor(color) {
+        this.color = color;
     }
 
     addVassal(vassal) {
@@ -22,12 +32,14 @@ class Country {
         }
         vassal.overlord = this;
         vassal.isVassal = true;
+        vassal.setColor(this.color); // Set vassal's color to overlord's color
         this.vassals.add(vassal);
     }
 
     removeVassal(vassal) {
         vassal.overlord = null;
         vassal.isVassal = false;
+        vassal.setColor(vassal.getRandomColor()); // Reset vassal's color to a random color
         this.vassals.delete(vassal);
     }
 
@@ -43,6 +55,7 @@ class Country {
             this.overlord.removeVassal(this);
             this.overlord = null;
             this.isVassal = false;
+            this.setColor(this.getRandomColor()); // Reset color to a random color
         }
     }
 
@@ -63,23 +76,4 @@ class Country {
     }
 }
 
-// Map to store all countries by their name
-const countryMap = new Map();
-
-// Example usage:
-const countryA = new Country("CountryA");
-const countryB = new Country("CountryB");
-const countryC = new Country("CountryC");
-
-countryA.setRuler("RulerA");
-countryB.setRuler("RulerB");
-countryC.setRuler("RulerC");
-
-countryA.addVassal(countryB);
-countryB.setOverlord(countryC); // This will automatically update the relationships
-
-countryMap.set(countryA.name, countryA);
-countryMap.set(countryB.name, countryB);
-countryMap.set(countryC.name, countryC);
-
-export { Country, countryMap };
+export { Country};
