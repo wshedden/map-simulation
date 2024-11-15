@@ -30,6 +30,14 @@ class Country {
         if (vassal.overlord) {
             vassal.overlord.removeVassal(vassal);
         }
+        // Transfer vassals of the annexed country to the new overlord
+        vassal.vassals.forEach(subVassal => {
+            subVassal.overlord = this;
+            subVassal.setColor(this.color);
+            this.vassals.add(subVassal);
+        });
+        vassal.vassals.clear(); // Clear the vassals of the annexed country
+
         vassal.overlord = this;
         vassal.isVassal = true;
         vassal.setColor(this.color); // Set vassal's color to overlord's color
@@ -76,4 +84,4 @@ class Country {
     }
 }
 
-export { Country};
+export { Country };
