@@ -32,7 +32,7 @@ export function initializeMap(countries, countryManager) {
         const countryCode = country.properties.Code;
         // If theres no code don't do this
         if (!countryCode) return;
-        console.log(`Country: ${country.properties.name}, Code: ${countryCode}`);
+        // console.log(`Country: ${country.properties.name}, Code: ${countryCode}`);
         if (countryManager.getCountryByCode(countryCode)) {
             country.properties.Color = countryManager.getCountryByCode(countryCode).color;
         }
@@ -103,7 +103,7 @@ export function updatePopulationDisplay() {
         .select("title")
         .text(title);
 
-    console.log(`Population data updated for year ${getCurrentYear()}`);
+    // console.log(`Population data updated for year ${getCurrentYear()}`);
 }
 
 export function updateMap(countries) {

@@ -50,9 +50,14 @@ export function updateDots(svg, countries, path, generateFlowerCoordinates) {
 }
 
 export function handleMouseOver(event, d, countryManager) {
-    d3.select(this).style("fill", "orange");
     const countryCode = d.properties.Code;
     const countryDetails = countryManager.getCountryDetailsByCode(countryCode);
+
+    if (!countryDetails || !countryDetails.Population) {
+        return;
+    }
+
+    d3.select(this).style("fill", "orange");
 
     const getValueOrNone = (value) => value !== undefined && value !== null ? value : "none";
 

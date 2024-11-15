@@ -14,11 +14,11 @@ export class CountryManager {
             const militaryStrength = Math.floor(population / 1000000);
             const wealth = Math.floor(population / 100000);
 
-            console.log(`Loading country: ${name}`);
-            console.log(`Population: ${population}`);
-            console.log(`Country Code: ${countryCode}`);
-            console.log(`Military Strength: ${militaryStrength}`);
-            console.log(`Wealth: ${wealth}`);
+            // console.log(`Loading country: ${name}`);
+            // console.log(`Population: ${population}`);
+            // console.log(`Country Code: ${countryCode}`);
+            // console.log(`Military Strength: ${militaryStrength}`);
+            // console.log(`Wealth: ${wealth}`);
 
             const country = new Country(name);
             country.setCountryCode(countryCode);
@@ -27,7 +27,7 @@ export class CountryManager {
             country.setWealth(wealth);
 
             this.countryMap.set(countryCode, country);
-            console.log(`Country ${name} loaded and added to countryMap.`);
+            // console.log(`Country ${name} loaded and added to countryMap.`);
         });
     }
 
@@ -57,7 +57,7 @@ export class CountryManager {
         // Print code if not found
         if (!this.countryMap.has(code)) {
             console.log(`Country with code ${code} not found.`);
-            throw new Error(`Country with code ${code} not found.`);
+            return null;
         }
         return this.countryMap.get(code);
     }
@@ -67,6 +67,7 @@ export class CountryManager {
         if (!country) {
             return {};
         }
+        // If there isn't a code then return too
         return {
             name: country.name,
             Code: country.countryCode,

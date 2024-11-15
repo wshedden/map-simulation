@@ -83,8 +83,8 @@ export class Simulation {
         usa.addVassal(canada);
         uk.addVassal(usa);
 
+        // Update the map to reflect the color changes
+        updateMap(this.countries);
     }
 
-
 }
-
