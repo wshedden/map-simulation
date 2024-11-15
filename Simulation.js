@@ -1,6 +1,6 @@
 import { updateMap } from './map.js';
 import { colorScale } from './utils.js';
-import { topoJsonNameToCode } from './data.js';
+import { topoJsonNameToCode, checkMissingCountriesFromBorderCSV } from './data.js';
 import { svg } from './map.js';
 
 export class Simulation {
@@ -59,8 +59,8 @@ export class Simulation {
     }
 
     runTimestep() {
-        // Make a random country 
-
+        // get uk polygon object from gb
+        const uk = this.countryManager.getCountryByCode("GB");
     }
 
     runSimulation() {
@@ -106,7 +106,8 @@ export class Simulation {
 
         // Update the map to reflect the color changes
         updateMap(this.countries);
-        // Opens the countries.json file then gets rid of data from w. sahara, kosovo, and n. cyprus, antarctica, somaliland then saves it to countries_no_disputed.json
+        
+
     }
 }
 

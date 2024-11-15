@@ -27,6 +27,10 @@ export function initializeMap(countries, countryManager) {
         if (populationDataMap.has(countryName)) {
             country.properties.Population = populationDataMap.get(countryName)[`2022`];
             country.properties.Code = populationDataMap.get(countryName)["country_code"];
+            const simCountry = countryManager.getCountryByCode(country.properties.Code);
+            if (simCountry) {
+                simCountry.setTopoJsonObject(country);
+            }
         }
         // Use the two-digit country code for countryManager
         const countryCode = country.properties.Code;

@@ -11,6 +11,7 @@ class Country {
         this.wealth = 0;
         this.borderingCountries = new Set();
         this.color = this.getRandomColor();
+        this.topoJsonObject = null;
     }
 
     getRandomColor() {
@@ -24,6 +25,9 @@ class Country {
 
     setColor(color) {
         this.color = color;
+        if (this.topoJsonObject) {
+            this.topoJsonObject.properties.Color = color;
+        }
     }
 
     addVassal(vassal) {
@@ -42,6 +46,14 @@ class Country {
         vassal.isVassal = true;
         vassal.setColor(this.color); // Set vassal's color to overlord's color
         this.vassals.add(vassal);
+    }
+
+    setTopoJsonObject(topoJsonObject) {
+        this.topoJsonObject = topoJsonObject;
+        // Print out the country's name and code
+        // console.log(`Country: ${this.name}, Code: ${this.countryCode}`);
+        //Print obejct
+        // console.log(this.topoJsonObject);
     }
 
     removeVassal(vassal) {

@@ -49,19 +49,20 @@ export function loadData(worldData, countryData, populationData, energyData, cur
             countryCode = countryNameToCodeMapping[country.properties.name];
         }
         if (populationDataMap.has(countryCode)) {
-            country.properties.Population = populationDataMap.get(countryCode)[`${currentYear}`];
+            country.properties.Population = populationDataMap.get(countryCode)[`2022`];
         }
     });
 }
 
-export function updatePopulations(countries, populationDataMap, countryNameToCodeMapping, currentYear) {
+export function updatePopulations(countries, populationDataMap, countryNameToCodeMapping) {
     countries.forEach(country => {
         let countryCode = country.properties.code;
         if (countryNameToCodeMapping[country.properties.name]) {
             countryCode = countryNameToCodeMapping[country.properties.name];
+
         }
         if (populationDataMap.has(countryCode)) {
-            country.properties.Population = populationDataMap.get(countryCode)[`${currentYear}`];
+            country.properties.Population = populationDataMap.get(countryCode)[`2022`];
         }
     });
 }
@@ -95,4 +96,23 @@ export function topoJsonNameToCode(name, countryManager) {
         return country.countryCode;
     }
     return null;
+}
+
+export async function checkMissingCountriesFromBorderCSV(countryManager) {
+    const data = await d3.csv("borders.csv");
+    const csvCountryCodes = new Set(data.map(row => row.country_code));
+
+    const missingCountries = [];
+    countryManager.getAllCountries().forEach(country => {
+        if (!csvCountryCodes.has(country.countryCode)) {
+            missingCountries.push(country.countryCode);
+        }
+    });
+
+    if (missingCountries.length > 0) {
+        console.log("Countries not found in borders.csv:");
+        missingCountries.forEach(code => console.log(code));
+    } else {
+        console.log("All countries are present in borders.csv.");
+    }
 }
