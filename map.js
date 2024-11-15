@@ -1,4 +1,3 @@
-import { setCurrentYear, getCurrentYear } from './main.js';
 import { populationDataMap, countryNameMapping, countries } from './data.js';
 import {resize, updateDots, handleMouseOver, handleMouseOut, formatPopulation, colorScale} from './utils.js';
 
@@ -96,4 +95,12 @@ export function updatePopulationDisplay() {
     console.log(`Population data updated for year ${getCurrentYear()}`);
 }
 
-export {resize, updateDots, generateFlowerCoordinates}
+function updateMap(countries) {
+    svg.selectAll("path")
+        .data(countries)
+        .attr("fill", d => colorScale(d.properties.Population))
+        .select("title")
+        .text(d => `${d.properties.name} - Population: ${d.properties.Population}`);
+}
+
+export {resize, updateDots, generateFlowerCoordinates, updateMap}

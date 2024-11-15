@@ -1,19 +1,10 @@
-import { initializeMap, updateDots, resize, generateFlowerCoordinates, svg, path, updatePopulationDisplay, projection} from './map.js';
+import { initializeMap, updateDots, resize, generateFlowerCoordinates, svg, path, updatePopulationDisplay, projection } from './map.js';
 import { colorScale } from './utils.js';
-import { loadData , countries, updatePopulations, populationDataMap, countryNameMapping, updateColours, printCountryBorders} from './data.js';
-import { setupSlider } from './slider.js';
+import { loadData, countries, updatePopulations, populationDataMap, countryNameMapping, updateColours, printCountryBorders } from './data.js';
+import { CountryManager } from './CountryManager.js';
+import { Simulation } from './Simulation.js';
 
-let currentYear = 1970;
-export function getCurrentYear() {
-    return currentYear;
-}
-
-export function setCurrentYear(year) {
-    currentYear = year;
-    updatePopulations(countries, populationDataMap, countryNameMapping, currentYear);
-    updateDots(svg, countries, path, generateFlowerCoordinates);
-    updateColours(svg, countries, colorScale)
-}
+const countryManager = new CountryManager();
 
 window.onresize = () => resize(svg, projection);
 
@@ -23,10 +14,10 @@ Promise.all([
     d3.csv("populations_interpolated_with_codes.csv"),
     d3.csv("energy.csv")
 ]).then(([worldData, countryData, populationData, energyData]) => {
-    loadData(worldData, countryData, populationData, energyData, currentYear);
-    initializeMap();
-    updatePopulationDisplay();
-    updateDots(svg, countries, path, generateFlowerCoordinates);
-    setupSlider(setCurrentYear, getCurrentYear);
-    printCountryBorders("AF");
+    loadData(worldData, countryData, populationData, energyData, 1970);
+    countryManager.loadCountries(populationData);
+    initializeMap(countries);
+
+    const simulation = new Simulation(countryManager, countries);
+    simulation.runSimulation();
 });

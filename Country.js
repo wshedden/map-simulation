@@ -80,3 +80,5 @@ countryB.setOverlord(countryC); // This will automatically update the relationsh
 countryMap.set(countryA.name, countryA);
 countryMap.set(countryB.name, countryB);
 countryMap.set(countryC.name, countryC);
+
+export { Country, countryMap };
