@@ -71,7 +71,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 100); // Increment every 2 seconds
+        }, 30); // Increment every 2 seconds
     }
 
     stopSimulation() {
@@ -81,14 +81,6 @@ export class Simulation {
     }
 
     initialiseSimulation() {
-        // Logic to set up the simulation
-        // This could involve setting up initial conditions, etc.
-        // Make canada a vassal of the US
-        const canada = this.countryManager.getCountryByCode("CA");
-        const usa = this.countryManager.getCountryByCode("US");
-        const uk = this.countryManager.getCountryByCode("GB");
-        usa.addVassal(canada);
-        uk.addVassal(usa);
 
         // // For all countries print their bordering countries
         // this.countryManager.countryMap.forEach(country => {
@@ -108,5 +100,32 @@ export class Simulation {
         });
         this.updateCountries();
     }
-}
 
+    invade(target) {
+        console.log(`${this.name} is invading ${target.name}.`);
+        // Determine the probability of the weaker opponent winning
+        const winProbability = 0.3; // 30% chance the weaker opponent wins
+
+        if (Math.random() < winProbability) {
+            // Weaker opponent wins
+            console.log(`${target.name} successfully defended against ${this.name}.`);
+            // Reduce the invader's military strength
+            this.militaryStrength -= Math.floor(target.militaryStrength / 2);
+            if (this.militaryStrength < 0) this.militaryStrength = 0;
+        } else {
+            // Invader wins
+            // Add target's military strength to this country's military strength
+            this.militaryStrength += target.militaryStrength;
+            // Set target's military strength to zero
+            target.militaryStrength = 0;
+            // Target is now a vassal of this country
+            target.setOverlord(this);
+            // Add target's bordering countries to this country's bordering countries
+            target.borderingCountries.forEach(country => {
+                if (country !== this) { // Avoid adding itself as a bordering country
+                    this.borderingCountries.add(country);
+                }
+            });
+        }
+    }
+}

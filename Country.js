@@ -12,6 +12,7 @@ class Country {
         this.borderingCountries = new Set();
         this.color = this.getRandomColor();
         this.topoJsonObject = null;
+        this.hasHalvedStrength = false; // Track if military strength has been halved
     }
 
     getRandomColor() {
@@ -21,6 +22,10 @@ class Country {
             color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
+    }
+
+    setMilitaryStrength(militaryStrength) {
+        this.militaryStrength = militaryStrength;
     }
 
     setColor(color) {
@@ -34,32 +39,26 @@ class Country {
         if (vassal.overlord) {
             vassal.overlord.removeVassal(vassal);
         }
-        // Transfer vassals of the annexed country to the new overlord
         vassal.vassals.forEach(subVassal => {
             subVassal.overlord = this;
             subVassal.setColor(this.color);
             this.vassals.add(subVassal);
         });
-        vassal.vassals.clear(); // Clear the vassals of the annexed country
-
+        vassal.vassals.clear();
         vassal.overlord = this;
         vassal.isVassal = true;
-        vassal.setColor(this.color); // Set vassal's color to overlord's color
+        vassal.setColor(this.color);
         this.vassals.add(vassal);
     }
 
     setTopoJsonObject(topoJsonObject) {
         this.topoJsonObject = topoJsonObject;
-        // Print out the country's name and code
-        // console.log(`Country: ${this.name}, Code: ${this.countryCode}`);
-        //Print obejct
-        // console.log(this.topoJsonObject);
     }
 
     removeVassal(vassal) {
         vassal.overlord = null;
         vassal.isVassal = false;
-        vassal.setColor(vassal.getRandomColor()); // Reset vassal's color to a random color
+        vassal.setColor(vassal.getRandomColor());
         this.vassals.delete(vassal);
     }
 
@@ -75,7 +74,7 @@ class Country {
             this.overlord.removeVassal(this);
             this.overlord = null;
             this.isVassal = false;
-            this.setColor(this.getRandomColor()); // Reset color to a random color
+            this.setColor(this.getRandomColor());
         }
     }
 
@@ -85,14 +84,16 @@ class Country {
 
     setPopulation(population) {
         this.population = population;
-    }
-
-    setMilitaryStrength(strength) {
-        this.militaryStrength = strength;
+        this.updateMilitaryStrength();
     }
 
     setWealth(wealth) {
         this.wealth = wealth;
+        this.updateMilitaryStrength();
+    }
+
+    updateMilitaryStrength() {
+        this.militaryStrength = this.population / 1000000 + this.wealth / 100;
     }
 
     printBorderingCountries() {
@@ -101,25 +102,53 @@ class Country {
     }
 
     makeMove() {
-        // Placeholder for decision-making logic
-        // For now, just log the move
-        console.log(`${this.name} is making a move.`);
-        // Example decision: decide to invade a random neighboring country
+        // console.log(`${this.name} is making a move.`);
         const neighbors = Array.from(this.borderingCountries);
         if (neighbors.length > 0) {
             const target = neighbors[Math.floor(Math.random() * neighbors.length)];
-            // If not a vassal, invade the target if their strength is less than this country's strength
             if(!this.isVassal && target.militaryStrength < this.militaryStrength) {
                 this.invade(target);
             }
+        }
+        this.wealth -= this.vassals.size; // Decrease wealth based on the number of vassals
+
+        if (this.wealth <= 0) {
+            this.goBankrupt();
+        } else {
+            // Increase wealth proportional to population
+            this.wealth += this.population / 100000000;
+        }
+
+        // Increase military strength based on vassal status
+        if (this.isVassal) {
+            this.militaryStrength *= 1.005; // Increase by 0.5%
+        } else {
+            this.militaryStrength *= 1.02; // Increase by 2%
+        }
+    }
+
+    goBankrupt() {
+        // console.log(`${this.name} has gone bankrupt.`);
+        this.vassals.forEach(vassal => this.removeVassal(vassal));
+        this.vassals.clear();
+        if (!this.hasHalvedStrength) {
+            this.militaryStrength /= 2;
+            this.hasHalvedStrength = true;
         }
     }
 
     invade(target) {
         console.log(`${this.name} is invading ${target.name}.`);
-        // Target is now a vassal of this country
+        this.militaryStrength += target.militaryStrength / 4;
+        target.militaryStrength /= 2;
+        this.wealth += target.wealth * 0.6;
+        target.wealth *= 0.4;
         target.setOverlord(this);
-
+        target.borderingCountries.forEach(country => {
+            if (country !== this) {
+                this.borderingCountries.add(country);
+            }
+        });
     }
 }
 
