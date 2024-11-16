@@ -56,10 +56,32 @@ export class CountryManager {
         });
     }
 
+    getRandomCountry(predicate) {
+        // Go through maximum 5 times getting a random country and if it doesn't satisfy the predicate then return null
+        for (let i = 0; i < 5; i++) {
+            const randomCountry = this.getRandomCountryHelper();
+            // console.log(`Attempt ${i + 1}: Checking country ${randomCountry.name}`);
+            if (predicate(randomCountry)) {
+            // console.log(`Country ${randomCountry.name} satisfies the predicate.`);
+            return randomCountry;
+            } else {
+            // console.log(`Country ${randomCountry.name} does not satisfy the predicate.`);
+            }
+        }
+        // console.log("No country satisfied the predicate after 5 attempts.");
+        return null;
+    }
+
+    getRandomCountryHelper() {
+        const randomIndex = Math.floor(Math.random() * this.countryMap.size);
+        const randomCountry = Array.from(this.countryMap.values())[randomIndex];
+        return randomCountry;
+    }
+
     getCountryByCode(code) {
         // Print code if not found
         if (!this.countryMap.has(code)) {
-            console.log(`Country with code ${code} not found.`);
+            // console.log(`Country with code ${code} not found.`);
             return null;
         }
         return this.countryMap.get(code);

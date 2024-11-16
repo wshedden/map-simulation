@@ -73,7 +73,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 30); // Increment every 2 seconds
+        }, 100); // Increment every 2 seconds
     }
 
     stopSimulation() {
@@ -98,7 +98,7 @@ export class Simulation {
     processTurn() {
         const countries = this.countryManager.getAllCountries();
         countries.forEach(country => {
-            country.makeMove();
+            country.makeMove(this.countryManager);
         });
         this.updateCountries();
     }
