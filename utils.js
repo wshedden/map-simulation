@@ -99,3 +99,24 @@ export function handleMouseOut(event, d, countryManager) {
     d3.select(this).style("fill", colorScale(countryDetails.Population));
     d3.select(".tooltip").remove();
 }
+
+export function parseDistanceMatrix(filePath) {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const parsedData = Papa.parse(fileContent, { header: true });
+    const data = parsedData.data;
+
+    const distanceMatrix = {};
+
+    data.forEach(row => {
+        const fromCode = row[''];
+        distanceMatrix[fromCode] = {};
+
+        Object.keys(row).forEach(toCode => {
+            if (toCode !== '') {
+                distanceMatrix[fromCode][toCode] = parseFloat(row[toCode]);
+            }
+        });
+    });
+
+    return distanceMatrix;
+}

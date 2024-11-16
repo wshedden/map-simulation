@@ -60,6 +60,7 @@ export class Simulation {
 
     runTimestep() {
         this.processTurn();
+        this.updateRankingTable();
     }
 
     runSimulation() {
@@ -67,6 +68,7 @@ export class Simulation {
         // This could involve running multiple timesteps, updating the display, etc.
         this.initialiseSimulation();
         this.updateCountries();
+        this.updateRankingTable();
         this.interval = setInterval(() => {
             this.numDays++;
             this.runTimestep();
@@ -102,7 +104,7 @@ export class Simulation {
     }
 
     invade(target) {
-        console.log(`${this.name} is invading ${target.name}.`);
+        // console.log(`${this.name} is invading ${target.name}.`);
         // Determine the probability of the weaker opponent winning
         const winProbability = 0.3; // 30% chance the weaker opponent wins
 
@@ -128,4 +130,48 @@ export class Simulation {
             });
         }
     }
+
+    updateRankingTable() {
+        const countries = this.countryManager.getAllCountries();
+        // Sort by rank (wealth)
+        countries.sort((a, b) => b.wealth - a.wealth);
+    
+        const tbody = d3.select("#ranking-table tbody");
+    
+        // Bind the sorted data
+        const rows = tbody.selectAll("tr")
+            .data(countries, d => d.countryCode);
+    
+        // Enter new rows
+        const rowsEnter = rows.enter().append("tr");
+    
+        rowsEnter.append("td").attr("class", "rank");
+        rowsEnter.append("td").attr("class", "country");
+        rowsEnter.append("td").attr("class", "wealth");
+        rowsEnter.append("td").attr("class", "military-strength");
+        rowsEnter.append("td").attr("class", "population");
+        rowsEnter.append("td").attr("class", "vassals");
+        rowsEnter.append("td").attr("class", "land-area");
+    
+        // Update existing rows
+        const rowsUpdate = rowsEnter.merge(rows);
+    
+        // Reorder and style rows
+        rowsUpdate.order()
+            .transition()
+            .duration(500)
+            .style("background-color", (d, i) => i % 2 === 0 ? "#f9f9f9" : "#fff");
+    
+        rowsUpdate.select(".rank").text((d, i) => i + 1);
+        rowsUpdate.select(".country").text(d => d.name);
+        rowsUpdate.select(".wealth").text(d => d.wealth.toLocaleString());
+        rowsUpdate.select(".military-strength").text(d => d.militaryStrength.toLocaleString());
+        rowsUpdate.select(".population").text(d => d.population.toLocaleString());
+        rowsUpdate.select(".vassals").text(d => Array.isArray(d.vassals) ? d.vassals.map(v => v.name).join(", ") : "");
+        rowsUpdate.select(".land-area").text("N/A");
+    
+        // Remove old rows
+        rows.exit().remove();
+    }
+    
 }

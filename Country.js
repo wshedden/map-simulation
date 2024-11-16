@@ -1,3 +1,4 @@
+import { distanceMatrix } from "./CountryManager.js";
 class Country {
     constructor(name) {
         this.name = name;
@@ -138,17 +139,28 @@ class Country {
     }
 
     invade(target) {
-        console.log(`${this.name} is invading ${target.name}.`);
+        // console.log(`${this.name} is invading ${target.name}.`);
         this.militaryStrength += target.militaryStrength / 4;
+        this.setPopulation(this.population + target.population * 0.1);
+        target.population *= 0.9;
         target.militaryStrength /= 2;
         this.wealth += target.wealth * 0.6;
         target.wealth *= 0.4;
         target.setOverlord(this);
+        // Check if distance to target is undefined (use utils.js getDistance which uses country codes)
+        // this.getDistance(this.countryCode, target.countryCode) ? this.borderingCountries.add(target) : null;
+
         target.borderingCountries.forEach(country => {
             if (country !== this) {
                 this.borderingCountries.add(country);
             }
         });
+    }
+
+    getDistance(target) {
+        // Search for this country's code in the distance matrix
+        const distance = distanceMatrix.get(this.countryCode);
+        console.log(distance);
     }
 }
 

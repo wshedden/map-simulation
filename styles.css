@@ -44,3 +44,37 @@ body {
     fill: orange;
     cursor: pointer;
 }
+
+#ranking-container {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#ranking-table th, #ranking-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#ranking-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+#ranking-table tbody {
+    position: relative;
+}
+
+#ranking-table tbody tr {
+    /* position: absolute; */
+    width: 100%;
+    transition: transform 0.5s ease;
+}

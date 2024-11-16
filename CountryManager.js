@@ -1,10 +1,11 @@
 import { Country } from './Country.js';
+export let distanceMatrix;
 
 export class CountryManager {
     constructor() {
         this.countryMap = new Map();
     }
-    loadCountries(populationData, borderData) {
+    loadCountries(populationData, borderData, distanceData) {
         /* name is Country/Territory, population is 2022, country_code is country_code */
 
         populationData.forEach(data => {
@@ -13,13 +14,6 @@ export class CountryManager {
             const countryCode = data["country_code"];
             const militaryStrength = Math.floor(population / 1000000);
             const wealth = Math.floor(population / 100000);
-
-            // console.log(`Loading country: ${name}`);
-            // console.log(`Population: ${population}`);
-            // console.log(`Country Code: ${countryCode}`);
-            // console.log(`Military Strength: ${militaryStrength}`);
-            // console.log(`Wealth: ${wealth}`);
-
             const country = new Country(name);
             country.setCountryCode(countryCode);
             country.setPopulation(population);
@@ -27,10 +21,10 @@ export class CountryManager {
             country.setWealth(wealth);
 
             this.countryMap.set(countryCode, country);
-            // console.log(`Country ${name} loaded and added to countryMap.`);
-
 
         });
+
+        distanceMatrix = distanceData;
 
         this.updateBorderingCountries(borderData);
     }
@@ -151,5 +145,9 @@ export class CountryManager {
         });
 
         // console.log("Finished updating bordering countries.");
+    }
+
+    getDistance(countryCode1, countryCode2) { // Use distance matrix
+        console.log(this.distanceMatrix);
     }
 }
