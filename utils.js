@@ -63,7 +63,7 @@ export function handleMouseOver(event, d, countryManager) {
         ? Array.from(countryDetails.borderingCountries).map(country => country.name).join(", ")
         : "none";
 
-    console.log(countryDetails.borderingCountries);
+    // console.log(countryDetails.borderingCountries);
     
 
     const tooltip = d3.select("body").append("div")

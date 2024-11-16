@@ -59,8 +59,7 @@ export class Simulation {
     }
 
     runTimestep() {
-        // get uk polygon object from gb
-        const uk = this.countryManager.getCountryByCode("GB");
+        this.processTurn();
     }
 
     runSimulation() {
@@ -72,7 +71,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 5000); // Increment every 5 seconds
+        }, 100); // Increment every 2 seconds
     }
 
     stopSimulation() {
@@ -100,6 +99,14 @@ export class Simulation {
         updateMap(this.countries);
         
 
+    }
+
+    processTurn() {
+        const countries = this.countryManager.getAllCountries();
+        countries.forEach(country => {
+            country.makeMove();
+        });
+        this.updateCountries();
     }
 }
 

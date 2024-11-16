@@ -99,6 +99,28 @@ class Country {
         console.log(`Bordering countries of ${this.name}:`);
         this.borderingCountries.forEach(country => console.log(country.name));
     }
+
+    makeMove() {
+        // Placeholder for decision-making logic
+        // For now, just log the move
+        console.log(`${this.name} is making a move.`);
+        // Example decision: decide to invade a random neighboring country
+        const neighbors = Array.from(this.borderingCountries);
+        if (neighbors.length > 0) {
+            const target = neighbors[Math.floor(Math.random() * neighbors.length)];
+            // If not a vassal, invade the target if their strength is less than this country's strength
+            if(!this.isVassal && target.militaryStrength < this.militaryStrength) {
+                this.invade(target);
+            }
+        }
+    }
+
+    invade(target) {
+        console.log(`${this.name} is invading ${target.name}.`);
+        // Target is now a vassal of this country
+        target.setOverlord(this);
+
+    }
 }
 
 export { Country };
