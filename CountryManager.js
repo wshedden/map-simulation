@@ -1,6 +1,7 @@
 import { Country } from './Country.js';
 export let distanceMatrix;
 
+
 export class CountryManager {
     constructor() {
         this.countryMap = new Map();
@@ -101,7 +102,17 @@ export class CountryManager {
             Wealth: country.wealth,
             Vassals: Array.from(country.vassals).map(vassal => vassal.name).join(", ") || "none",
             Overlord: country.overlord ? country.overlord.name : "none",
-            borderingCountries: country.borderingCountries ? Array.from(country.borderingCountries).map(country => country.name).join(", ") : "none"
+            borderingCountries: country.borderingCountries ? Array.from(country.borderingCountries).map(country => country.name).join(", ") : "none",
+            MilitarySpending: country.militarySpending,
+            EconomicGrowth: country.economicGrowth,
+            PopulationGrowth: country.populationGrowth,
+            InternationalTies: country.internationalTies,
+            TechnologicalAdvancement: country.technologicalAdvancement,
+            CulturalDevelopment: country.culturalDevelopment,
+            EnvironmentalSustainability: country.environmentalSustainability,
+            HealthcareImprovement: country.healthcareImprovement,
+            EducationEnhancement: country.educationEnhancement,
+            InfrastructureDevelopment: country.infrastructureDevelopment
         };
     }
 

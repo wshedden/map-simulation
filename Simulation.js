@@ -2,6 +2,7 @@ import { updateMap } from './map.js';
 import { colorScale } from './utils.js';
 import { topoJsonNameToCode, checkMissingCountriesFromBorderCSV } from './data.js';
 import { svg } from './map.js';
+import { updateCountryProperty } from './countryUtils.js';
 
 export class Simulation {
     constructor(countryManager, countries) {
@@ -60,7 +61,10 @@ export class Simulation {
 
     runTimestep() {
         this.processTurn();
-        this.updateRankingTable();
+        // If day is multiple of 100 sayso
+        if (this.numDays % 100 === 0) {
+            console.log(`Day ${this.numDays}`);
+        }
     }
 
     runSimulation() {
@@ -73,7 +77,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 30); // Increment every 2 seconds
+        }, 20); // Increment every 2 seconds
     }
 
     stopSimulation() {
@@ -83,16 +87,7 @@ export class Simulation {
     }
 
     initialiseSimulation() {
-
-        // // For all countries print their bordering countries
-        // this.countryManager.countryMap.forEach(country => {
-        //     country.printBorderingCountries();
-        // });
-
-        // Update the map to reflect the color changes
         updateMap(this.countries);
-        
-
     }
 
     processTurn() {

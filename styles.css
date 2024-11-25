@@ -78,3 +78,20 @@ body {
     width: 100%;
     transition: transform 0.5s ease;
 }
+
+.country-stats {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: white;
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 5px;
+    width: 300px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.country-stats h2 {
+    margin-top: 0;
+}

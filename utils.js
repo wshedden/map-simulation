@@ -7,6 +7,7 @@ export const colorScale = d3.scaleSequential(d3.interpolateRgbBasis([
     "#0000ff", // Blue for high population
     "#800080"  // Purple for the highest population
 ]));
+
 export function formatPopulation(population) {
     if (population >= 1e9) {
         return `${(population / 1e9).toFixed(2)}B`;
@@ -63,9 +64,6 @@ export function handleMouseOver(event, d, countryManager) {
         ? Array.from(countryDetails.borderingCountries).map(country => country.name).join(", ")
         : "none";
 
-    // console.log(countryDetails.borderingCountries);
-    
-
     const tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("position", "absolute")
@@ -82,7 +80,17 @@ export function handleMouseOver(event, d, countryManager) {
         Wealth: ${getValueOrNone(countryDetails.Wealth)}<br>
         Vassals: ${getValueOrNone(countryDetails.Vassals)}<br>
         Overlord: ${getValueOrNone(countryDetails.Overlord)}<br>
-        Bordering Countries: ${countryDetails.borderingCountries}
+        Bordering Countries: ${countryDetails.borderingCountries}<br>
+        Military Spending: ${getValueOrNone(countryDetails.MilitarySpending)}<br>
+        Economic Growth: ${getValueOrNone(countryDetails.EconomicGrowth)}<br>
+        Population Growth: ${getValueOrNone(countryDetails.PopulationGrowth)}<br>
+        International Ties: ${getValueOrNone(countryDetails.InternationalTies)}<br>
+        Technological Advancement: ${getValueOrNone(countryDetails.TechnologicalAdvancement)}<br>
+        Cultural Development: ${getValueOrNone(countryDetails.CulturalDevelopment)}<br>
+        Environmental Sustainability: ${getValueOrNone(countryDetails.EnvironmentalSustainability)}<br>
+        Healthcare Improvement: ${getValueOrNone(countryDetails.HealthcareImprovement)}<br>
+        Education Enhancement: ${getValueOrNone(countryDetails.EducationEnhancement)}<br>
+        Infrastructure Development: ${getValueOrNone(countryDetails.InfrastructureDevelopment)}
     `)
     .style("left", `${event.pageX + 10}px`)
     .style("top", `${event.pageY + 10}px`);
