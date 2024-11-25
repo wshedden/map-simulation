@@ -112,41 +112,52 @@ class Country {
 
     makeMove(countryManager) {
         // console.log(`${this.name} is making a move.`);
-        const neighbors = Array.from(this.borderingCountries);
-        if (neighbors.length > 0) {
-            const target = neighbors[Math.floor(Math.random() * neighbors.length)];
-            if(!this.isVassal && target.militaryStrength + target.overlordMilitaryStrength < this.militaryStrength) {
-                this.invade(target);
+        // Only invade with very low probability if you are not a vassal
+    
+        if (!this.isVassal && Math.random() < 0.001) {
+            const neighbors = Array.from(this.borderingCountries);
+            if (neighbors.length > 0) {
+                const target = neighbors[Math.floor(Math.random() * neighbors.length)];
+                if (!this.isVassal && target.militaryStrength + target.overlordMilitaryStrength < this.militaryStrength) {
+                    this.invade(target);
+                }
             }
         }
         this.wealth -= this.vassals.size; // Decrease wealth based on the number of vassals
-
+    
         if (this.wealth <= 0) {
             this.goBankrupt();
         } else {
             // Increase wealth proportional to population
             this.wealth += this.population / 100000000;
         }
-
+    
         // Increase military strength based on vassal status
         if (this.isVassal) {
             this.militaryStrength *= 1.005; // Increase by 0.5%
         } else {
             this.militaryStrength *= 1.02; // Increase by 2%
         }
-
-        // Attempt to colonise with a low probability if you have a lot of money
-        if (Math.random() < 0.02 && this.wealth > 5000 && this.militaryStrength > 10000) {
-            if(this.colonise(countryManager)) {
-                // If successful
-                ;
-            }
+    
+        // Check if overlord's military strength falls below 500
+        if (this.militaryStrength < 500 && this.vassals.size > 0) {
+            this.vassals.forEach(vassal => this.removeVassal(vassal));
+            this.vassals.clear();
         }
-
-        // Check for rare random events
-        if (Math.random() < 0.0005) { 
+    
+        // Attempt to colonise with a low probability if you have a lot of money
+        // if (Math.random() < 0.02 && this.wealth > 5000 && this.militaryStrength > 10000) {
+        //     if(this.colonise(countryManager)) {
+        //         // If successful
+        //         ;
+        //     }
+        // }
+    
+        // Check for rare random eventsQ
+        if (Math.random() < 0.00005) {
             this.naturalDisaster();
         }
+
     }
 
     goBankrupt() {
@@ -181,21 +192,21 @@ class Country {
         });
     }
 
-    colonise(countryManager) {
-        // console.log(`${this.name} is colonising.`);
-        // Get a random code until one is weaker than this country
-        // Get random country 
-        let target = countryManager.getRandomCountry(t => t.militaryStrength < this.militaryStrength && t !== this);
-        // If target is null, return
-        if (!target) return;
-        // Otherwise invade
-        // console.log("Successful colonisation!");
-        this.invade(target);
-        this.wealth -= 400;
-    }
+    // colonise(countryManager) {
+    //     // console.log(`${this.name} is colonising.`);
+    //     // Get a random code until one is weaker than this country
+    //     // Get random country 
+    //     let target = countryManager.getRandomCountry(t => t.militaryStrength < this.militaryStrength && t !== this);
+    //     // If target is null, return
+    //     if (!target) return;
+    //     // Otherwise invade
+    //     // console.log("Successful colonisation!");
+    //     this.invade(target);
+    //     this.wealth -= 400;
+    // }
 
     naturalDisaster() {
-        console.log(`${this.name} has been hit by a natural disaster!`);
+        // console.log(`${this.name} has been hit by a natural disaster!`);
         // Random catastrophe level
         const catastropheLevel = Math.random() * 0.6;
         // Random population loss
