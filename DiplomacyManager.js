@@ -1,22 +1,25 @@
 // DiplomacyManager.js
-class DiplomacyManager {
+export class DiplomacyManager {
     constructor() {
-        this.countries = new Map(); // e.g., {"US": countryObject}
+        this.alliances = new Map();
+        this.wars = new Map(); // Wars have string key and belligerent set value
     }
 
-    addCountry(country) {
-        this.countries.set(country.countryCode, country);
+    addAlliance(country1, country2) {
+        if (!this.alliances.has(country1)) {
+            this.alliances.set(country1, new Set());
+        }
+        this.alliances.get(country1).add(country2);
     }
 
-    formAlliance(countryCode1, countryCode2) {
-        const country1 = this.countries.get(countryCode1);
-        const country2 = this.countries.get(countryCode2);
-        if (country1 && country2) {
-            country1.formAlliance(country2);
+    removeAlliance(country1, country2) {
+        if (this.alliances.has(country1)) {
+            this.alliances.get(country1).delete(country2);
         }
     }
 
-    // Other methods...
-}
+    hasAlliance(country1, country2) {
+        return this.alliances.has(country1) && this.alliances.get(country1).has(country2);
+    }
 
-export { DiplomacyManager };
+}

@@ -14,6 +14,8 @@ class Country {
         this.allies = new Set(); // Add allies set
         this.color = this.getRandomColor();
         this.topoJsonObject = null;
+        this.diplomaticRelations = new Map();
+        this.decisionEngine = null;
     }
 
     getRandomColor() {
@@ -50,6 +52,10 @@ class Country {
         vassal.isVassal = true;
         vassal.setColor(this.color);
         this.vassals.add(vassal);
+    }
+
+    setDecisionEngine(decisionEngine) {
+        this.decisionEngine = decisionEngine;
     }
 
     setTopoJsonObject(topoJsonObject) {
@@ -98,8 +104,8 @@ class Country {
         this.borderingCountries.forEach(country => console.log(country.name));
     }
 
-    makeMove(countryManager) {
-        // Implementation for making a move
+    makeMove() {
+        this.decisionEngine.makeDecision();
     }
 
     getCountryCodeIndex(countryCode) {
@@ -127,8 +133,10 @@ class Country {
     }
 
     addAlly(ally) {
-        this.allies.add(ally);
-        ally.allies.add(this);
+        if(ally) {
+            this.allies.add(ally);
+            ally.allies.add(this);
+        }
     }
 
     removeAlly(ally) {

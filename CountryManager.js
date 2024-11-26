@@ -1,9 +1,12 @@
 import { Country } from './Country.js';
+import { DecisionEngine } from './DecisionEngine.js';
+import { DiplomacyManager } from './DiplomacyManager.js';
 export let distanceMatrix;
 
 export class CountryManager {
     constructor() {
         this.countryMap = new Map();
+        this.diplomacyManager = new DiplomacyManager();
     }
 
     loadCountries(populationData, borderData, distanceData) {
@@ -20,6 +23,9 @@ export class CountryManager {
             country.setPopulation(population);
             country.setMilitaryStrength(militaryStrength);
             country.setWealth(wealth);
+
+            let decisionEngine = new DecisionEngine(country, this, this.diplomacyManager);
+            country.setDecisionEngine(decisionEngine);
 
             this.countryMap.set(countryCode, country);
         });

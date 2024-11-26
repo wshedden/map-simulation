@@ -61,8 +61,8 @@ export class Simulation {
 
     runTimestep() {
         this.processTurn();
-        // If day is multiple of 100 sayso
-        if (this.numDays % 100 === 0) {
+        // If day is multiple of 20 say so
+        if (this.numDays % 20 === 0) {
             console.log(`Day ${this.numDays}`);
         }
     }
@@ -77,7 +77,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 200); // Increment every 0.2 seconds
+        }, 500); // Increment every 0.5 seconds
     }
 
     stopSimulation() {
