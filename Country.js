@@ -128,7 +128,8 @@ class Country {
             Vassals: Array.from(this.vassals).map(vassal => vassal.name).join(", ") || "none",
             Overlord: this.overlord ? this.overlord.name : "none",
             BorderingCountries: Array.from(this.borderingCountries).map(country => country.name).join(", ") || "none",
-            Allies: Array.from(this.allies).map(ally => ally.name).join(", ") || "none" // Include allies
+            Allies: Array.from(this.allies).map(ally => ally.name).join(", ") || "none", // Include allies
+            Relations: Array.from(this.diplomaticRelations.entries()).map(([code, relation]) => `${code}: ${relation}`).join(", ") || "none" // Include relations
         };
     }
 
