@@ -1,5 +1,5 @@
-import { initializeMap, updateDots, resize, generateFlowerCoordinates, svg, path, updatePopulationDisplay, projection } from './map.js';
-import { loadData, countries, topoJsonNameToCode } from './data.js';
+import { initializeMap, resize, svg, projection } from './map.js';
+import { loadData, countries } from './data.js';
 import { CountryManager } from './CountryManager.js';
 import { Simulation } from './Simulation.js';
 

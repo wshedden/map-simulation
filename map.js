@@ -55,32 +55,26 @@ export function initializeMap(countries, countryManager) {
         .on("mouseout", function(event, d) {
             handleMouseOut(event, d, countryManager);
         });
-}
 
-function generateFlowerCoordinates(center, numDots, innerRadius, outerRadius) {
-    const coordinates = [];
-    const numRings = 5;
-    const radiusIncrement = (outerRadius - innerRadius) / (numRings - 1);
+    // Add alliance symbol
+    const allianceSymbol = svg.append("g")
+        .attr("class", "alliance-symbol")
+        .attr("transform", d => {
+            const centroid = path.centroid(d);
+            return `translate(${centroid[0]}, ${centroid[1]})`;
+        });
 
-    let remainingDots = numDots;
-    for (let j = 0; j < numRings; j++) {
-        const radius = innerRadius + j * radiusIncrement;
-        const maxDotsInRing = Math.max(3, Math.round((numDots * (j + 1)) / numRings));
-        const dotsInRing = Math.min(remainingDots, maxDotsInRing);
-        const angleIncrement = (2 * Math.PI) / dotsInRing;
+    allianceSymbol.append("circle")
+        .attr("r", 10)
+        .attr("fill", "blue");
 
-        for (let i = 0; i < dotsInRing; i++) {
-            const angle = i * angleIncrement;
-            const x = center[0] + radius * Math.cos(angle);
-            const y = center[1] + radius * Math.sin(angle);
-            coordinates.push([x, y]);
-        }
-
-        remainingDots -= dotsInRing;
-        if (remainingDots <= 0) break;
-    }
-
-    return coordinates;
+    allianceSymbol.append("text")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("dy", ".35em")
+        .attr("text-anchor", "middle")
+        .attr("fill", "white")
+        .text("A");
 }
 
 export function updatePopulationDisplay() {
@@ -118,4 +112,4 @@ export function updateMap(countries) {
         .text(d => `${d.properties.name} - Population: ${d.properties.Population}`);
 }
 
-export { resize, updateDots, generateFlowerCoordinates };
+export { resize, updateDots };
