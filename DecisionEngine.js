@@ -3,7 +3,7 @@ export class DecisionEngine {
     constructor(country, countryManager, diplomacyManager) {
         this.country = country;
         this.countryManager = countryManager;
-        this.diplomacyManager = null;
+        this.diplomacyManager = diplomacyManager;
     }
 
     makeDecision() {
@@ -28,11 +28,12 @@ export class DecisionEngine {
     }
 
     handleDiplomacy() {
-        // Find random neighbour
-        const neighbours = this.country.borderingCountries;
-        // Set the ally of this country to the US 
-        const us = this.countryManager.getCountryByCode("US");
-        this.country.addAlly(us);
-        // Update the map
+        // Pick a random neighbour from the set
+        if(this.country.borderingCountries.size === 0) {
+            return;
+        }
+        const neighbours = Array.from(this.country.borderingCountries);
+        const randomNeighbour = neighbours[Math.floor(Math.random() * neighbours.length)];
++       randomNeighbour.addAlly(this.country);        
     }
 }
