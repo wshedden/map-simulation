@@ -38,6 +38,7 @@ function updateCountryStats(country) {
         Vassals: ${countryDetails.Vassals}<br>
         Overlord: ${countryDetails.Overlord}<br>
         Bordering Countries: ${countryDetails.BorderingCountries}<br>
+        Allies: ${countryDetails.Allies}<br>
     `;
 }
 

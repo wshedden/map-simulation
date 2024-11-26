@@ -11,6 +11,7 @@ class Country {
         this.militaryStrength = 0;
         this.wealth = 0;
         this.borderingCountries = new Set();
+        this.allies = new Set(); // Add allies set
         this.color = this.getRandomColor();
         this.topoJsonObject = null;
     }
@@ -98,8 +99,7 @@ class Country {
     }
 
     makeMove(countryManager) {
-        
-
+        // Implementation for making a move
     }
 
     getCountryCodeIndex(countryCode) {
@@ -121,8 +121,19 @@ class Country {
             Wealth: formatTo3SF(this.wealth),
             Vassals: Array.from(this.vassals).map(vassal => vassal.name).join(", ") || "none",
             Overlord: this.overlord ? this.overlord.name : "none",
-            BorderingCountries: Array.from(this.borderingCountries).map(country => country.name).join(", ") || "none"
+            BorderingCountries: Array.from(this.borderingCountries).map(country => country.name).join(", ") || "none",
+            Allies: Array.from(this.allies).map(ally => ally.name).join(", ") || "none" // Include allies
         };
+    }
+
+    addAlly(ally) {
+        this.allies.add(ally);
+        ally.allies.add(this);
+    }
+
+    removeAlly(ally) {
+        this.allies.delete(ally);
+        ally.allies.delete(this);
     }
 }
 

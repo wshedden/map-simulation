@@ -32,11 +32,8 @@ export function initializeMap(countries, countryManager) {
                 simCountry.setTopoJsonObject(country);
             }
         }
-        // Use the two-digit country code for countryManager
         const countryCode = country.properties.Code;
-        // If theres no code don't do this
         if (!countryCode) return;
-        // console.log(`Country: ${country.properties.name}, Code: ${countryCode}`);
         if (countryManager.getCountryByCode(countryCode)) {
             country.properties.Color = countryManager.getCountryByCode(countryCode).color;
         }
@@ -56,25 +53,30 @@ export function initializeMap(countries, countryManager) {
             handleMouseOut(event, d, countryManager);
         });
 
-    // Add alliance symbol
-    const allianceSymbol = svg.append("g")
-        .attr("class", "alliance-symbol")
-        .attr("transform", d => {
-            const centroid = path.centroid(d);
-            return `translate(${centroid[0]}, ${centroid[1]})`;
-        });
+    // Add alliance symbol only for allies
+    countries.forEach(country => {
+        const simCountry = countryManager.getCountryByCode(country.properties.Code);
+        if (simCountry && simCountry.allies.size > 0) {
+            const centroid = path.centroid(country);
+            svg.append("g")
+                .attr("class", "alliance-symbol")
+                .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
+                .append("circle")
+                .attr("r", 10)
+                .attr("fill", "blue");
 
-    allianceSymbol.append("circle")
-        .attr("r", 10)
-        .attr("fill", "blue");
-
-    allianceSymbol.append("text")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("dy", ".35em")
-        .attr("text-anchor", "middle")
-        .attr("fill", "white")
-        .text("A");
+            svg.append("g")
+                .attr("class", "alliance-symbol")
+                .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
+                .append("text")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("dy", ".35em")
+                .attr("text-anchor", "middle")
+                .attr("fill", "white")
+                .text("A");
+        }
+    });
 }
 
 export function updatePopulationDisplay() {
@@ -100,8 +102,6 @@ export function updatePopulationDisplay() {
         .attr("fill", d => colorScale(d.properties.Population))
         .select("title")
         .text(title);
-
-    // console.log(`Population data updated for year ${getCurrentYear()}`);
 }
 
 export function updateMap(countries) {

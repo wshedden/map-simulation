@@ -77,7 +77,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 20); // Increment every 2 seconds
+        }, 200); // Increment every 0.2 seconds
     }
 
     stopSimulation() {
