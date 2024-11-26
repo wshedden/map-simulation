@@ -38,16 +38,6 @@ function updateCountryStats(country) {
         Vassals: ${countryDetails.Vassals}<br>
         Overlord: ${countryDetails.Overlord}<br>
         Bordering Countries: ${countryDetails.BorderingCountries}<br>
-        Military Spending: ${countryDetails.MilitarySpending}<br>
-        Economic Growth: ${countryDetails.EconomicGrowth}<br>
-        Population Growth: ${countryDetails.PopulationGrowth}<br>
-        International Ties: ${countryDetails.InternationalTies}<br>
-        Technological Advancement: ${countryDetails.TechnologicalAdvancement}<br>
-        Cultural Development: ${countryDetails.CulturalDevelopment}<br>
-        Environmental Sustainability: ${countryDetails.EnvironmentalSustainability}<br>
-        Healthcare Improvement: ${countryDetails.HealthcareImprovement}<br>
-        Education Enhancement: ${countryDetails.EducationEnhancement}<br>
-        Infrastructure Development: ${countryDetails.InfrastructureDevelopment}<br>
     `;
 }
 

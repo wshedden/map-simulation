@@ -1,11 +1,11 @@
 import { Country } from './Country.js';
 export let distanceMatrix;
 
-
 export class CountryManager {
     constructor() {
         this.countryMap = new Map();
     }
+
     loadCountries(populationData, borderData, distanceData) {
         /* name is Country/Territory, population is 2022, country_code is country_code */
 
@@ -22,7 +22,6 @@ export class CountryManager {
             country.setWealth(wealth);
 
             this.countryMap.set(countryCode, country);
-
         });
 
         distanceMatrix = distanceData;
@@ -61,15 +60,10 @@ export class CountryManager {
         // Go through maximum 5 times getting a random country and if it doesn't satisfy the predicate then return null
         for (let i = 0; i < 5; i++) {
             const randomCountry = this.getRandomCountryHelper();
-            // console.log(`Attempt ${i + 1}: Checking country ${randomCountry.name}`);
             if (predicate(randomCountry)) {
-            // console.log(`Country ${randomCountry.name} satisfies the predicate.`);
-            return randomCountry;
-            } else {
-            // console.log(`Country ${randomCountry.name} does not satisfy the predicate.`);
+                return randomCountry;
             }
         }
-        // console.log("No country satisfied the predicate after 5 attempts.");
         return null;
     }
 
@@ -80,9 +74,7 @@ export class CountryManager {
     }
 
     getCountryByCode(code) {
-        // Print code if not found
         if (!this.countryMap.has(code)) {
-            // console.log(`Country with code ${code} not found.`);
             return null;
         }
         return this.countryMap.get(code);
@@ -93,27 +85,7 @@ export class CountryManager {
         if (!country) {
             return {};
         }
-        // If there isn't a code then return too
-        return {
-            name: country.name,
-            Code: country.countryCode,
-            Population: country.population,
-            MilitaryStrength: country.militaryStrength,
-            Wealth: country.wealth,
-            Vassals: Array.from(country.vassals).map(vassal => vassal.name).join(", ") || "none",
-            Overlord: country.overlord ? country.overlord.name : "none",
-            borderingCountries: country.borderingCountries ? Array.from(country.borderingCountries).map(country => country.name).join(", ") : "none",
-            MilitarySpending: country.militarySpending,
-            EconomicGrowth: country.economicGrowth,
-            PopulationGrowth: country.populationGrowth,
-            InternationalTies: country.internationalTies,
-            TechnologicalAdvancement: country.technologicalAdvancement,
-            CulturalDevelopment: country.culturalDevelopment,
-            EnvironmentalSustainability: country.environmentalSustainability,
-            HealthcareImprovement: country.healthcareImprovement,
-            EducationEnhancement: country.educationEnhancement,
-            InfrastructureDevelopment: country.infrastructureDevelopment
-        };
+        return country.getDetails();
     }
 
     setCountryPopulation(code, newPopulation) {
@@ -146,8 +118,6 @@ export class CountryManager {
             const countryCode1 = row.country_code;
             const countryCode2 = row.country_border_code;
 
-            // console.log(`Processing row: ${countryCode1} - ${countryCode2}`);
-
             if (countryCode1 && countryCode2) {
                 const country1 = this.getCountryByCode(countryCode1);
                 const country2 = this.getCountryByCode(countryCode2);
@@ -169,15 +139,11 @@ export class CountryManager {
 
                     country1.borderingCountries.add(country2);
                     country2.borderingCountries.add(country1);
-
-                    // console.log(`Added border: ${country1.name} <-> ${country2.name}`);
                 }
-            } else {
-                // console.log(`Invalid row: ${countryCode1} - ${countryCode2}`);
             }
         });
 
-        // console.log("Finished updating bordering countries.");
+        console.log("Finished updating bordering countries.");
     }
 
     getDistance(countryCode1, countryCode2) { // Use distance matrix

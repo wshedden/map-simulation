@@ -80,16 +80,6 @@ export function handleMouseOver(event, d, countryManager) {
         Vassals: ${getValueOrNone(countryDetails.Vassals)}<br>
         Overlord: ${getValueOrNone(countryDetails.Overlord)}<br>
         Bordering Countries: ${getValueOrNone(countryDetails.BorderingCountries)}<br>
-        Military Spending: ${getValueOrNone(countryDetails.MilitarySpending)}<br>
-        Economic Growth: ${getValueOrNone(countryDetails.EconomicGrowth)}<br>
-        Population Growth: ${getValueOrNone(countryDetails.PopulationGrowth)}<br>
-        International Ties: ${getValueOrNone(countryDetails.InternationalTies)}<br>
-        Technological Advancement: ${getValueOrNone(countryDetails.TechnologicalAdvancement)}<br>
-        Cultural Development: ${getValueOrNone(countryDetails.CulturalDevelopment)}<br>
-        Environmental Sustainability: ${getValueOrNone(countryDetails.EnvironmentalSustainability)}<br>
-        Healthcare Improvement: ${getValueOrNone(countryDetails.HealthcareImprovement)}<br>
-        Education Enhancement: ${getValueOrNone(countryDetails.EducationEnhancement)}<br>
-        Infrastructure Development: ${getValueOrNone(countryDetails.InfrastructureDevelopment)}<br>
     `)
     .style("left", `${event.pageX + 10}px`)
     .style("top", `${event.pageY + 10}px`);
