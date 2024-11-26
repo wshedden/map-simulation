@@ -39,6 +39,7 @@ function updateCountryStats(country) {
         Overlord: ${countryDetails.Overlord}<br>
         Bordering Countries: ${countryDetails.BorderingCountries}<br>
         Allies: ${countryDetails.Allies}<br>
+        Reputations: ${countryDetails.Reputations}<br>
     `;
 }
 

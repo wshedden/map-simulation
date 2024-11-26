@@ -18,7 +18,7 @@ export class CountryManager {
             const countryCode = data["country_code"];
             const militaryStrength = Math.floor(population / 1000000);
             const wealth = Math.floor(population / 100000);
-            const country = new Country(name);
+            const country = new Country(name, this); // Pass CountryManager instance
             country.setCountryCode(countryCode);
             country.setPopulation(population);
             country.setMilitaryStrength(militaryStrength);
@@ -149,6 +149,14 @@ export class CountryManager {
 
                     country1.borderingCountries.add(country2);
                     country2.borderingCountries.add(country1);
+
+                    // Initialize reputation values
+                    if (!country1.diplomaticRelations.has(countryCode2)) {
+                        country1.diplomaticRelations.set(countryCode2, 5);
+                    }
+                    if (!country2.diplomaticRelations.has(countryCode1)) {
+                        country2.diplomaticRelations.set(countryCode1, 5);
+                    }
                 }
             }
         });
