@@ -108,7 +108,7 @@ class Country {
     }
 
     setPopulation(population) {
-        this.population = population / 10000000; // Adjust population scale to 10 million
+        this.population = population;
         this.updateMilitaryStrength();
     }
 
@@ -268,6 +268,40 @@ class Country {
     increaseDiplomaticRelations(amount) {
         this.diplomaticRelations += amount;
     }
+
+    increaseBorderingCountriesWealth(amount) {
+        this.borderingCountries.forEach(country => {
+            country.wealth += amount;
+            country.updateMilitaryStrength(); // Update military strength based on new wealth
+        });
+    }
+
+    getDetails() {
+        return {
+            name: this.name,
+            Code: this.countryCode,
+            Population: formatTo3SF(this.population),
+            MilitaryStrength: formatTo3SF(this.militaryStrength),
+            Wealth: formatTo3SF(this.wealth),
+            Vassals: Array.from(this.vassals).map(vassal => vassal.name).join(", ") || "none",
+            Overlord: this.overlord ? this.overlord.name : "none",
+            BorderingCountries: Array.from(this.borderingCountries).map(country => country.name).join(", ") || "none",
+            MilitarySpending: formatTo3SF(this.militarySpending),
+            EconomicGrowth: formatTo3SF(this.economicGrowth),
+            PopulationGrowth: formatTo3SF(this.populationGrowth),
+            InternationalTies: formatTo3SF(this.internationalTies),
+            TechnologicalAdvancement: formatTo3SF(this.technologicalAdvancement),
+            CulturalDevelopment: formatTo3SF(this.culturalDevelopment),
+            EnvironmentalSustainability: formatTo3SF(this.environmentalSustainability),
+            HealthcareImprovement: formatTo3SF(this.healthcareImprovement),
+            EducationEnhancement: formatTo3SF(this.educationEnhancement),
+            InfrastructureDevelopment: formatTo3SF(this.infrastructureDevelopment)
+        };
+    }
+}
+
+function formatTo3SF(number) {
+    return Number(number.toPrecision(3));
 }
 
 export { Country };

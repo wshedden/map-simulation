@@ -27,33 +27,32 @@ Promise.all([
 // W. Sahara, Antarctica, N. Cyprus, Somaliland, Kosovo are not in the population data
 
 function updateCountryStats(country) {
+    const countryDetails = country.getDetails();
     const statsContent = document.getElementById('stats-content');
     statsContent.innerHTML = `
-        <strong>${country.name}</strong><br>
-        Country Code: ${country.countryCode}<br>
-        Population: ${country.population}<br>
-        Military Strength: ${country.militaryStrength}<br>
-        Wealth: ${country.wealth}<br>
-        Military Spending: ${country.militarySpending}<br>
-        Economic Growth: ${country.economicGrowth}<br>
-        Population Growth: ${country.populationGrowth}<br>
-        International Ties: ${country.internationalTies}<br>
-        Technological Advancement: ${country.technologicalAdvancement}<br>
-        Cultural Development: ${country.culturalDevelopment}<br>
-        Environmental Sustainability: ${country.environmentalSustainability}<br>
-        Healthcare Improvement: ${country.healthcareImprovement}<br>
-        Education Enhancement: ${country.educationEnhancement}<br>
-        Infrastructure Development: ${country.infrastructureDevelopment}<br>
-        Aggression Level: ${country.aggressionLevel}<br>
-        Economic Stability: ${country.economicStability}<br>
-        Military Readiness: ${country.militaryReadiness}<br>
-        Diplomatic Relations: ${country.diplomaticRelations}<br>
-        Bordering Countries: ${Array.from(country.borderingCountries).map(c => c.name).join(', ')}
+        <strong>${countryDetails.name}</strong><br>
+        Country Code: ${countryDetails.Code}<br>
+        Population: ${countryDetails.Population}<br>
+        Military Strength: ${countryDetails.MilitaryStrength}<br>
+        Wealth: ${countryDetails.Wealth}<br>
+        Vassals: ${countryDetails.Vassals}<br>
+        Overlord: ${countryDetails.Overlord}<br>
+        Bordering Countries: ${countryDetails.BorderingCountries}<br>
+        Military Spending: ${countryDetails.MilitarySpending}<br>
+        Economic Growth: ${countryDetails.EconomicGrowth}<br>
+        Population Growth: ${countryDetails.PopulationGrowth}<br>
+        International Ties: ${countryDetails.InternationalTies}<br>
+        Technological Advancement: ${countryDetails.TechnologicalAdvancement}<br>
+        Cultural Development: ${countryDetails.CulturalDevelopment}<br>
+        Environmental Sustainability: ${countryDetails.EnvironmentalSustainability}<br>
+        Healthcare Improvement: ${countryDetails.HealthcareImprovement}<br>
+        Education Enhancement: ${countryDetails.EducationEnhancement}<br>
+        Infrastructure Development: ${countryDetails.InfrastructureDevelopment}<br>
     `;
 }
 
 // Add event listener for country clicks
-document.addEventListener('click', (event) => {
+document.addEventListener('mouseover', (event) => {
     const countryCode = event.target.getAttribute('data-code');
     if (countryCode) {
         const country = countryManager.getCountryByCode(countryCode);

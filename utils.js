@@ -52,17 +52,16 @@ export function updateDots(svg, countries, path, generateFlowerCoordinates) {
 
 export function handleMouseOver(event, d, countryManager) {
     const countryCode = d.properties.Code;
-    const countryDetails = countryManager.getCountryDetailsByCode(countryCode);
-    if (!countryDetails || !countryDetails.Population) {
+    const country = countryManager.getCountryByCode(countryCode);
+    if (!country) {
         return;
     }
+
+    const countryDetails = country.getDetails();
 
     d3.select(this).style("fill", "orange");
 
     const getValueOrNone = (value) => value !== undefined && value !== null ? value : "none";
-    const borderingCountries = countryDetails.borderingCountries
-        ? Array.from(countryDetails.borderingCountries).map(country => country.name).join(", ")
-        : "none";
 
     const tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -80,7 +79,7 @@ export function handleMouseOver(event, d, countryManager) {
         Wealth: ${getValueOrNone(countryDetails.Wealth)}<br>
         Vassals: ${getValueOrNone(countryDetails.Vassals)}<br>
         Overlord: ${getValueOrNone(countryDetails.Overlord)}<br>
-        Bordering Countries: ${countryDetails.borderingCountries}<br>
+        Bordering Countries: ${getValueOrNone(countryDetails.BorderingCountries)}<br>
         Military Spending: ${getValueOrNone(countryDetails.MilitarySpending)}<br>
         Economic Growth: ${getValueOrNone(countryDetails.EconomicGrowth)}<br>
         Population Growth: ${getValueOrNone(countryDetails.PopulationGrowth)}<br>
@@ -90,7 +89,7 @@ export function handleMouseOver(event, d, countryManager) {
         Environmental Sustainability: ${getValueOrNone(countryDetails.EnvironmentalSustainability)}<br>
         Healthcare Improvement: ${getValueOrNone(countryDetails.HealthcareImprovement)}<br>
         Education Enhancement: ${getValueOrNone(countryDetails.EducationEnhancement)}<br>
-        Infrastructure Development: ${getValueOrNone(countryDetails.InfrastructureDevelopment)}
+        Infrastructure Development: ${getValueOrNone(countryDetails.InfrastructureDevelopment)}<br>
     `)
     .style("left", `${event.pageX + 10}px`)
     .style("top", `${event.pageY + 10}px`);
