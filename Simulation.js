@@ -1,8 +1,5 @@
-import { updateMap } from './map.js';
+import { refreshMap, updateMap } from './map.js';
 import { colorScale } from './utils.js';
-import { topoJsonNameToCode, checkMissingCountriesFromBorderCSV } from './data.js';
-import { svg } from './map.js';
-import { updateCountryProperty } from './countryUtils.js';
 
 export class Simulation {
     constructor(countryManager, countries) {
@@ -47,6 +44,7 @@ export class Simulation {
         });
 
         updateMap(this.countries);
+        refreshMap(this.countries, this.countryManager);
         // updateColours(svg, this.countries, colorScale);
     }
 
@@ -65,6 +63,7 @@ export class Simulation {
         if (this.numDays % 20 === 0) {
             console.log(`Day ${this.numDays}`);
         }
+
     }
 
     runSimulation() {

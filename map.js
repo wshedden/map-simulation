@@ -112,4 +112,34 @@ export function updateMap(countries) {
         .text(d => `${d.properties.name} - Population: ${d.properties.Population}`);
 }
 
+export function refreshMap(countries, countryManager) {
+    // Remove existing alliance symbols
+    svg.selectAll(".alliance-symbol").remove();
+
+    // Add alliance symbol only for allies
+    countries.forEach(country => {
+        const simCountry = countryManager.getCountryByCode(country.properties.Code);
+        if (simCountry && simCountry.allies.size > 0) {
+            const centroid = path.centroid(country);
+            svg.append("g")
+                .attr("class", "alliance-symbol")
+                .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
+                .append("circle")
+                .attr("r", 10)
+                .attr("fill", "blue");
+
+            svg.append("g")
+                .attr("class", "alliance-symbol")
+                .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
+                .append("text")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("dy", ".35em")
+                .attr("text-anchor", "middle")
+                .attr("fill", "white")
+                .text("A");
+        }
+    });
+}
+
 export { resize, updateDots };

@@ -30,10 +30,9 @@ export class DecisionEngine {
     handleDiplomacy() {
         // Find random neighbour
         const neighbours = this.country.borderingCountries;
-        console.log(neighbours);
-        const randomIndex = Math.floor(Math.random() * neighbours.size);
-        const randomNeighbour = Array.from(neighbours)[randomIndex];
-        if (!randomNeighbour) return;
-        this.country.addAlly(randomNeighbour);
+        // Set the ally of this country to the US 
+        const us = this.countryManager.getCountryByCode("US");
+        this.country.addAlly(us);
+        // Update the map
     }
 }
