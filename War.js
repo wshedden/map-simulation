@@ -38,7 +38,7 @@ export class War {
     endWar() {
         this.isActive = false;
         this.belligerents.forEach(country => country.leaveWar(this));
-        this.belligerents.clear(); // Clear the belligerents set
+        this.belligerents.clear();
     }
 
     resolveBattle(country1, country2) {
@@ -46,27 +46,27 @@ export class War {
         const winProbability = country1.militaryStrength / totalStrength;
         const winner = Math.random() < winProbability ? country1 : country2;
         const loser = winner === country1 ? country2 : country1;
-    
+
         const allocatedStrength = Math.min(winner.militaryStrength, loser.militaryStrength);
         loser.militaryStrength -= Math.floor(allocatedStrength / 2);
         if (loser.militaryStrength < 0) loser.militaryStrength = 0;
-    
+
         winner.warExhaustion += Math.floor(allocatedStrength / 20);
         loser.warExhaustion += Math.floor(allocatedStrength / 10);
-    
+
         console.log(`Battle resolved: Winner - ${winner.name}, Loser - ${loser.name}`);
         console.log(`Winner's military strength: ${winner.militaryStrength}, War exhaustion: ${winner.warExhaustion}`);
         console.log(`Loser's military strength: ${loser.militaryStrength}, War exhaustion: ${loser.warExhaustion}`);
-    
+
         if (loser.warExhaustion >= 100) {
             this.removeCountry(loser);
             loser.setOverlord(winner);
         }
-    
+
         if (this.belligerents.size === 1) {
             this.endWar();
         }
-    
+
         return winner;
     }
 }

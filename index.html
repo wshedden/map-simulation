@@ -9,16 +9,20 @@
     <script src="https://unpkg.com/topojson@3"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
-
-    
 </head>
 <body>
     
     <div id="country-stats" class="country-stats">
         <h2>Country Stats</h2>
         <div id="stats-content"></div>
+        <div id="factions-content"></div> <!-- Add this line -->
     </div>
     <div id="map"></div>
+    <div id="stats-container">
+        <div id="stats-content"></div>
+    </div>
+    <div id="factions-container"></div>
+    
 
     <div id="tooltip" style="position: absolute; visibility: hidden; background-color: white; padding: 5px; border: 1px solid black; border-radius: 3px;"></div>
     <script src="main.js" type="module"></script>

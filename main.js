@@ -27,19 +27,22 @@ Promise.all([
 // W. Sahara, Antarctica, N. Cyprus, Somaliland, Kosovo are not in the population data
 
 function updateCountryStats(country) {
-    const countryDetails = country.getDetails();
     const statsContent = document.getElementById('stats-content');
     statsContent.innerHTML = `
-        <strong>${countryDetails.name}</strong><br>
-        Country Code: ${countryDetails.Code}<br>
-        Population: ${countryDetails.Population}<br>
-        Military Strength: ${countryDetails.MilitaryStrength}<br>
-        Wealth: ${countryDetails.Wealth}<br>
-        Vassals: ${countryDetails.Vassals}<br>
-        Overlord: ${countryDetails.Overlord}<br>
-        Bordering Countries: ${countryDetails.BorderingCountries}<br>
-        Allies: ${countryDetails.Allies}<br>
-        Relations: ${countryDetails.Relations}<br>
+        <p>Name: ${country.name}</p>
+        <p>Population: ${country.population}</p>
+        <p>Military Strength: ${country.militaryStrength}</p>
+        <p>Wealth: ${country.wealth}</p>
+    `;
+
+    const borderingCountries = Array.from(country.borderingCountries).map(borderCountry => {
+        const relation = country.diplomaticRelations.get(borderCountry.countryCode) || 0;
+        return `<p>${borderCountry.name}: ${relation}</p>`;
+    }).join('');
+
+    statsContent.innerHTML += `
+        <h3>Bordering Countries Relations</h3>
+        ${borderingCountries}
     `;
 }
 

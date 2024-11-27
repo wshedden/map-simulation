@@ -11,12 +11,12 @@ class Country {
         this.militaryStrength = 0;
         this.wealth = 0;
         this.borderingCountries = new Set();
-        this.allies = new Set(); // Add allies set
+        this.allies = new Set();
         this.color = this.getRandomColor();
         this.topoJsonObject = null;
         this.diplomaticRelations = new Map();
         this.decisionEngine = null;
-        this.wars = new Set(); // Add wars set
+        this.wars = new Set();
     }
 
     getRandomColor() {
@@ -129,9 +129,26 @@ class Country {
             Vassals: Array.from(this.vassals).map(vassal => vassal.name).join(", ") || "none",
             Overlord: this.overlord ? this.overlord.name : "none",
             BorderingCountries: Array.from(this.borderingCountries).map(country => country.name).join(", ") || "none",
-            Allies: Array.from(this.allies).map(ally => ally.name).join(", ") || "none", // Include allies
-            Relations: Array.from(this.diplomaticRelations.entries()).map(([code, relation]) => `${code}: ${relation}`).join(", ") || "none" // Include relations
+            Allies: Array.from(this.allies).map(ally => ally.name).join(", ") || "none",
+            Relations: Array.from(this.diplomaticRelations.entries()).map(([code, relation]) => `${code}: ${relation}`).join(", ") || "none",
+            Factions: this.getFactions(),
+            Wars: this.getWars()
         };
+    }
+
+    getFactions() {
+        return Array.from(this.wars).map(war => {
+            const faction = war.getEnemyFaction(this);
+            return faction ? faction.name : "none";
+        }).join(", ") || "none";
+    }
+
+    getWars() {
+        return Array.from(this.wars).map(war => {
+            const enemyFaction = war.getEnemyFaction(this);
+            const enemyCountries = Array.from(enemyFaction.members).map(member => member.name).join(", ");
+            return `War against ${enemyFaction.name} (Countries: ${enemyCountries}) - ${war.isActive ? "Active" : "Ended"}`;
+        }).join("; ") || "none";
     }
 
     addAlly(ally) {

@@ -4,37 +4,9 @@ import { War } from './War.js';
 // DiplomacyManager.js
 export class DiplomacyManager {
     constructor() {
-        this.alliances = new Map();
         this.wars = new Set();
+        this.alliances = new Map();
         this.factions = new Map();
-        this.allianceLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-        this.allianceColors = ['blue', 'red', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'grey', 'cyan'];
-        this.usedLetters = new Set();
-        this.usedColors = new Set();
-    }
-
-    generateUniqueAllianceProperties() {
-        let letter = null;
-        let color = null;
-
-        for (let i = 0; i < this.allianceLetters.length; i++) {
-            if (!this.usedLetters.has(this.allianceLetters[i])) {
-                letter = this.allianceLetters[i];
-                this.usedLetters.add(letter);
-                break;
-            }
-        }
-
-        for (let i = 0; i < this.allianceColors.length; i++) {
-            if (!this.usedColors.has(this.allianceColors[i])) {
-                color = this.allianceColors[i];
-                this.usedColors.add(color);
-                break;
-            }
-        }
-
-        console.log(`Generated alliance properties: letter=${letter}, color=${color}`);
-        return { letter, color };
     }
 
     updateRelations(country1, country2, change) {
@@ -46,74 +18,89 @@ export class DiplomacyManager {
         }
         country1.diplomaticRelations.set(country2.countryCode, country1.diplomaticRelations.get(country2.countryCode) + change);
         country2.diplomaticRelations.set(country1.countryCode, country2.diplomaticRelations.get(country1.countryCode) + change);
-    }
 
-    addAlliance(country1, country2) {
-        if (!this.alliances.has(country1)) {
-            this.alliances.set(country1, new Set());
-        }
-        this.alliances.get(country1).add(country2);
-
-        if (!this.alliances.has(country2)) {
-            this.alliances.set(country2, new Set());
-        }
-        this.alliances.get(country2).add(country1);
-
-        const { letter, color } = this.generateUniqueAllianceProperties();
-        country1.allianceLetter = letter;
-        country1.allianceColor = color;
-        country2.allianceLetter = letter;
-        country2.allianceColor = color;
-
-        console.log(`Assigned alliance properties to countries: country1=${country1.name}, country2=${country2.name}, letter=${letter}, color=${color}`);
-    }
-
-    removeAlliance(country1, country2) {
-        if (this.alliances.has(country1)) {
-            this.alliances.get(country1).delete(country2);
-        }
-        if (this.alliances.has(country2)) {
-            this.alliances.get(country2).delete(country1);
+        // Form factions if mutual relations are good
+        const mutualRelations = country1.diplomaticRelations.get(country2.countryCode) + country2.diplomaticRelations.get(country1.countryCode);
+        if (mutualRelations > 50) {
+            this.joinFaction(country1, country2);
         }
     }
 
-    hasAlliance(country1, country2) {
-        return this.alliances.has(country1) && this.alliances.get(country1).has(country2);
-    }
-
-    createFaction(name) {
-        const faction = new Faction(name);
-        this.factions.set(name, faction);
-        return faction;
-    }
-
-    startWar(faction1, faction2) {
-        if (!faction1 || !faction2) {
-            throw new Error("Both factions must be defined to start a war.");
+    startWar(country1, country2) {
+        if (this.areInSameFaction(country1, country2)) {
+            console.log(`${country1.name} and ${country2.name} are in the same faction and cannot go to war.`);
+            return;
         }
+
+        const faction1 = this.getOrCreateFaction(country1);
+        const faction2 = this.getOrCreateFaction(country2);
+
+        faction1.addMember(country1, this);
+        faction2.addMember(country2, this);
 
         const war = new War(faction1, faction2);
         this.wars.add(war);
-        faction1.members.forEach(member => member.joinWar(war));
-        faction2.members.forEach(member => member.joinWar(war));
+
+        country1.joinWar(war);
+        country2.joinWar(war);
+
+        console.log(`${country1.name} started a war with ${country2.name}`);
     }
 
-    isCountryAtWar(country) {
+    joinFaction(country1, country2) {
+        if (this.areAtWar(country1, country2)) {
+            console.log(`${country1.name} and ${country2.name} are at war and cannot join the same faction.`);
+            return;
+        }
+
+        const faction1 = this.getOrCreateFaction(country1);
+        const faction2 = this.getOrCreateFaction(country2);
+
+        if (faction1 !== faction2) {
+            console.log(`${country1.name} and ${country2.name} are in different factions and cannot join the same faction.`);
+            return;
+        }
+
+        faction1.addMember(country2);
+        console.log(`${country2.name} joined the faction ${faction1.name} led by ${country1.name}`);
+    }
+
+    getOrCreateFaction(country) {
+        let faction = this.factions.get(country.countryCode);
+        if (!faction) {
+            faction = new Faction(this.generateRandomFactionName());
+            this.factions.set(country.countryCode, faction);
+        }
+        return faction;
+    }
+
+    generateRandomFactionName() {
+        const adjectives = ["Mighty", "Brave", "Noble", "Fierce", "Valiant"];
+        const nouns = ["Alliance", "Federation", "Union", "Confederation", "Coalition"];
+        const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const noun = nouns[Math.floor(Math.random() * nouns.length)];
+        return `${adjective} ${noun}`;
+    }
+
+    areAtWar(country1, country2) {
         for (const war of this.wars) {
-            if (war.hasCountry(country)) {
+            if (war.hasCountry(country1) && war.hasCountry(country2)) {
                 return true;
             }
         }
         return false;
     }
 
-    getEnemyFaction(country) {
-        for (const war of this.wars) {
-            const enemyFaction = war.getEnemyFaction(country);
-            if (enemyFaction) {
-                return enemyFaction;
+    areInSameFaction(country1, country2) {
+        for (const faction of this.factions.values()) {
+            if (faction.hasMember(country1) && faction.hasMember(country2)) {
+                return true;
             }
         }
-        return null;
+        return false;
+    }
+
+    getAllFactions() {
+        return Array.from(this.factions.values());
     }
 }
