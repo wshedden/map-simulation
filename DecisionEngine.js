@@ -14,7 +14,11 @@ export class DecisionEngine {
         } else if (this.country.militaryStrength < 200) {
             this.focusOnMilitary();
         } else if (!this.country.isAtWar()) {
-            this.startWar();
+            if (Math.random() < 0.5) {
+                this.startWar();
+            } else {
+                this.colonize();
+            }
         } else {
             this.improveRelationsWithCountry();
         }
@@ -43,6 +47,15 @@ export class DecisionEngine {
         }
     }
 
+    colonize() {
+        const targetCountry = this.getWeakestOverseasCountry();
+        if (targetCountry) {
+            this.diplomacyManager.startWar(this.country, targetCountry);
+            this.country.wealth -= 100; // More expensive than a normal war
+            // console.log(`${this.country.name} started a colonization war with ${targetCountry.name}`);
+        }
+    }
+
     getRandomBorderingCountry() {
         const neighbours = Array.from(this.country.borderingCountries);
         if (neighbours.length === 0) {
@@ -57,6 +70,17 @@ export class DecisionEngine {
             return null;
         }
         return neighbours.reduce((weakest, current) => 
+            current.militaryStrength < weakest.militaryStrength ? current : weakest
+        );
+    }
+
+    getWeakestOverseasCountry() {
+        const allCountries = Array.from(this.countryManager.countryMap.values());
+        const overseasCountries = allCountries.filter(c => !this.country.borderingCountries.has(c));
+        if (overseasCountries.length === 0) {
+            return null;
+        }
+        return overseasCountries.reduce((weakest, current) => 
             current.militaryStrength < weakest.militaryStrength ? current : weakest
         );
     }

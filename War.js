@@ -21,28 +21,28 @@ export class War {
     }
 
     resolveBattle() {
-        const totalStrength = this.country1.militaryStrength + this.country2.militaryStrength;
-        const winProbability = this.country1.militaryStrength / totalStrength;
+        const getEffectiveStrength = (country) => {
+            let effectiveStrength = country.militaryStrength;
+            if (country.overlord) {
+                effectiveStrength += country.overlord.militaryStrength;
+            }
+            return effectiveStrength;
+        };
+
+        const totalStrength = getEffectiveStrength(this.country1) + getEffectiveStrength(this.country2);
+        const winProbability = getEffectiveStrength(this.country1) / totalStrength;
         const winner = Math.random() < winProbability ? this.country1 : this.country2;
         const loser = winner === this.country1 ? this.country2 : this.country1;
 
         const allocatedStrength = Math.min(winner.militaryStrength, loser.militaryStrength);
-        loser.militaryStrength -= Math.floor(allocatedStrength / 2);
+        loser.militaryStrength -= Math.floor(allocatedStrength / 5); // Increased impact on military strength
         if (loser.militaryStrength < 0) loser.militaryStrength = 0;
 
-        winner.militaryStrength -= Math.floor(allocatedStrength / 4);
+        winner.militaryStrength -= Math.floor(allocatedStrength / 10); // Increased impact on military strength
         if (winner.militaryStrength < 0) winner.militaryStrength = 0;
 
-        winner.warExhaustion += Math.floor(allocatedStrength / 5);
-        loser.warExhaustion += Math.floor(allocatedStrength / 3);
-
-        // Degrade reputation more severely
-        winner.diplomaticRelations.forEach((value, key) => {
-            winner.diplomaticRelations.set(key, value - 10);
-        });
-        loser.diplomaticRelations.forEach((value, key) => {
-            loser.diplomaticRelations.set(key, value - 10);
-        });
+        winner.warExhaustion += Math.floor(allocatedStrength / 25); // Increased impact on war exhaustion
+        loser.warExhaustion += Math.floor(allocatedStrength / 15); // Increased impact on war exhaustion
 
         console.log(`Battle resolved: Winner - ${winner.name}, Loser - ${loser.name}`);
         console.log(`Winner's military strength: ${winner.militaryStrength}, War exhaustion: ${winner.warExhaustion}`);

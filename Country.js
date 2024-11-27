@@ -56,6 +56,11 @@ class Country {
         vassal.isVassal = true;
         vassal.setColor(this.color);
         this.vassals.add(vassal);
+
+        // Transfer a portion of the vassal's military strength to the overlord
+        const transferredStrength = vassal.militaryStrength * 0.2; // 20% of vassal's military strength
+        this.militaryStrength += transferredStrength;
+        vassal.militaryStrength -= transferredStrength;
     }
 
     setDecisionEngine(decisionEngine) {
