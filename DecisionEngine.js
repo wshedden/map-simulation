@@ -39,7 +39,7 @@ export class DecisionEngine {
         const targetCountry = this.getWeakestBorderingCountry();
         if (targetCountry) {
             this.diplomacyManager.startWar(this.country, targetCountry);
-            console.log(`${this.country.name} started a war with ${targetCountry.name}`);
+            // console.log(`${this.country.name} started a war with ${targetCountry.name}`);
         }
     }
 

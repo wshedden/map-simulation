@@ -72,7 +72,7 @@ export class Simulation {
             this.numDays++;
             this.runTimestep();
             this.updateCountries();
-        }, 100); // Increment every second
+        }, 1000); // Increment every second
     }
 
     stopSimulation() {
@@ -88,6 +88,11 @@ export class Simulation {
     processTurn() {
         const countries = this.countryManager.getAllCountries();
         countries.forEach(country => {
+            if (country.isAtWar()) {
+                country.wars.forEach(war => {
+                    war.resolveBattle();
+                });
+            }
             country.makeMove();
         });
         this.updateCountries();

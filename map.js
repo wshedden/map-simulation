@@ -165,7 +165,7 @@ export function refreshMap(countries, countryManager) {
 
                 // Draw lines to countries at war
                 simCountry.wars.forEach(war => {
-                    war.belligerents.forEach(belligerent => {
+                    [war.country1, war.country2].forEach(belligerent => {
                         if (belligerent !== simCountry) {
                             const enemyCountry = countries.find(c => countryManager.getCountryByCode(c.properties.Code) === belligerent);
                             if (enemyCountry) {
