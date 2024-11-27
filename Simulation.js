@@ -88,7 +88,7 @@ export class Simulation {
     processTurn() {
         const countries = this.countryManager.getAllCountries();
         countries.forEach(country => {
-            country.makeMove(this.countryManager);
+            country.makeMove();
         });
         this.updateCountries();
     }

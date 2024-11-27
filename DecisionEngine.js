@@ -22,54 +22,24 @@ export class DecisionEngine {
 
     focusOnEconomy() {
         this.country.wealth += 20;
-        if (this.country.name === 'Russia') {
-            console.log(`Russia's new wealth: ${this.country.wealth}`);
-        }
     }
 
     focusOnMilitary() {
         this.country.militaryStrength += 20;
-        if (this.country.name === 'Russia') {
-            console.log(`Russia's new military strength: ${this.country.militaryStrength}`);
-        }
     }
 
     improveRelationsWithCountry() {
         const randomCountry = this.getRandomBorderingCountry();
         if (randomCountry) {
             this.diplomacyManager.updateRelations(this.country, randomCountry, 5);
-            const newRelation = this.country.diplomaticRelations.get(randomCountry.countryCode);
-            const theirRelation = randomCountry.diplomaticRelations.get(this.country.countryCode);
-            if (this.country.name === 'Russia') {
-                // console.log(`Russia improved relations with ${randomCountry.name}. New relation: ${newRelation}. Their relation of Russia: ${theirRelation}`);
-            }
         }
     }
 
     startWar() {
         const targetCountry = this.getWeakestBorderingCountry();
         if (targetCountry) {
-            const war = new War();
-            war.addCountry(this.country);
-            war.addCountry(targetCountry);
+            this.diplomacyManager.startWar(this.country, targetCountry);
             console.log(`${this.country.name} started a war with ${targetCountry.name}`);
-        }
-    }
-
-    allyWithCountry() {
-        const randomCountry = this.getRandomBorderingCountry();
-        if (randomCountry) {
-            const mutualReputation = this.country.diplomaticRelations.get(randomCountry.countryCode) === 100 &&
-                                     randomCountry.diplomaticRelations.get(this.country.countryCode) === 100;
-            if (mutualReputation) {
-                this.country.addAlly(randomCountry);
-                this.diplomacyManager.addAlliance(this.country, randomCountry);
-                if (this.country.name === 'Russia') {
-                    console.log(`Russia allied with ${randomCountry.name}. Mutual reputation: ${this.country.diplomaticRelations.get(randomCountry.countryCode)}`);
-                }
-            } else if (this.country.name === 'Russia') {
-                console.log(`Russia cannot ally with ${randomCountry.name} due to low mutual reputation`);
-            }
         }
     }
 
@@ -90,4 +60,4 @@ export class DecisionEngine {
             current.militaryStrength < weakest.militaryStrength ? current : weakest
         );
     }
-}   
+}

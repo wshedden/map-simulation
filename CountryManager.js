@@ -33,13 +33,6 @@ export class CountryManager {
         distanceMatrix = distanceData;
 
         this.updateBorderingCountries(borderData);
-
-        // Initialize alliances
-        const us = this.getCountryByCode("US");
-        const canada = this.getCountryByCode("CA");
-        if (us && canada) {
-            us.addAlly(canada);
-        }
     }
 
     getCountryByName(name) {

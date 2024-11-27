@@ -88,13 +88,19 @@ export class DiplomacyManager {
     }
 
     startWar(faction1, faction2) {
+        if (!faction1 || !faction2) {
+            throw new Error("Both factions must be defined to start a war.");
+        }
+
         const war = new War(faction1, faction2);
         this.wars.add(war);
+        faction1.members.forEach(member => member.joinWar(war));
+        faction2.members.forEach(member => member.joinWar(war));
     }
 
     isCountryAtWar(country) {
         for (const war of this.wars) {
-            if (war.isCountryAtWar(country)) {
+            if (war.hasCountry(country)) {
                 return true;
             }
         }
