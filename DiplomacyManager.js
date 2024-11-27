@@ -37,6 +37,17 @@ export class DiplomacyManager {
         return { letter, color };
     }
 
+    updateRelations(country1, country2, change) {
+        if (!country1.diplomaticRelations.has(country2.countryCode)) {
+            country1.diplomaticRelations.set(country2.countryCode, 0);
+        }
+        if (!country2.diplomaticRelations.has(country1.countryCode)) {
+            country2.diplomaticRelations.set(country1.countryCode, 0);
+        }
+        country1.diplomaticRelations.set(country2.countryCode, country1.diplomaticRelations.get(country2.countryCode) + change);
+        country2.diplomaticRelations.set(country1.countryCode, country2.diplomaticRelations.get(country1.countryCode) + change);
+    }
+
     addAlliance(country1, country2) {
         if (!this.alliances.has(country1)) {
             this.alliances.set(country1, new Set());

@@ -9,11 +9,12 @@ export class DecisionEngine {
     }
 
     makeDecision() {
-
         if (this.country.wealth < 500) {
             this.focusOnEconomy();
         } else if (this.country.militaryStrength < 200) {
             this.focusOnMilitary();
+        } else if (!this.country.isAtWar()) {
+            this.startWar();
         } else {
             this.improveRelationsWithCountry();
         }
@@ -36,33 +37,30 @@ export class DecisionEngine {
     improveRelationsWithCountry() {
         const randomCountry = this.getRandomBorderingCountry();
         if (randomCountry) {
-            this.country.diplomaticRelations[randomCountry.countryCode] = 
-                (this.country.diplomaticRelations[randomCountry.countryCode] || 0) + 5;
-            const newReputation = this.country.diplomaticRelations[randomCountry.countryCode];
-            const theirReputation = randomCountry.diplomaticRelations[this.country.countryCode] || 0;
+            this.diplomacyManager.updateRelations(this.country, randomCountry, 5);
+            const newRelation = this.country.diplomaticRelations.get(randomCountry.countryCode);
+            const theirRelation = randomCountry.diplomaticRelations.get(this.country.countryCode);
             if (this.country.name === 'Russia') {
-                console.log(`Russia improved relations with ${randomCountry.name}. New reputation: ${newReputation}. Their reputation of Russia: ${theirReputation}`);
+                // console.log(`Russia improved relations with ${randomCountry.name}. New relation: ${newRelation}. Their relation of Russia: ${theirRelation}`);
             }
         }
     }
 
-    startWarWithCountry() {
-        const weakestCountry = this.getWeakestBorderingCountry();
-        if (weakestCountry) {
-            const faction = this.diplomacyManager.createFaction(`${this.country.name}-Faction`);
-            faction.addMember(this.country);
-            this.diplomacyManager.startWar(faction, this.diplomacyManager.createFaction('Enemy-Faction'));
-            if (this.country.name === 'Russia') {
-                console.log(`Russia started a war with ${weakestCountry.name}`);
-            }
+    startWar() {
+        const targetCountry = this.getWeakestBorderingCountry();
+        if (targetCountry) {
+            const war = new War();
+            war.addCountry(this.country);
+            war.addCountry(targetCountry);
+            console.log(`${this.country.name} started a war with ${targetCountry.name}`);
         }
     }
 
     allyWithCountry() {
         const randomCountry = this.getRandomBorderingCountry();
         if (randomCountry) {
-            const mutualReputation = this.country.diplomaticRelations.get(randomCountry.countryCode) >= 10 &&
-                                     randomCountry.diplomaticRelations.get(this.country.countryCode) >= 10;
+            const mutualReputation = this.country.diplomaticRelations.get(randomCountry.countryCode) === 100 &&
+                                     randomCountry.diplomaticRelations.get(this.country.countryCode) === 100;
             if (mutualReputation) {
                 this.country.addAlly(randomCountry);
                 this.diplomacyManager.addAlliance(this.country, randomCountry);
@@ -92,4 +90,4 @@ export class DecisionEngine {
             current.militaryStrength < weakest.militaryStrength ? current : weakest
         );
     }
-}
+}   

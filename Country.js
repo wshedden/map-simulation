@@ -16,6 +16,7 @@ class Country {
         this.topoJsonObject = null;
         this.diplomaticRelations = new Map();
         this.decisionEngine = null;
+        this.wars = new Set(); // Add wars set
     }
 
     getRandomColor() {
@@ -134,7 +135,7 @@ class Country {
     }
 
     addAlly(ally) {
-        if(ally) {
+        if (ally) {
             this.allies.add(ally);
             ally.allies.add(this);
         }
@@ -143,6 +144,18 @@ class Country {
     removeAlly(ally) {
         this.allies.delete(ally);
         ally.allies.delete(this);
+    }
+
+    joinWar(war) {
+        this.wars.add(war);
+    }
+
+    leaveWar(war) {
+        this.wars.delete(war);
+    }
+
+    isAtWar() {
+        return this.wars.size > 0;
     }
 }
 

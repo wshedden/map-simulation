@@ -21,6 +21,7 @@ export class Simulation {
     updateCountries() {
         const countries = this.countryManager.getAllCountries();
         countries.forEach(country => {
+            // Perform any necessary updates for each country
         });
 
         this.updatePopulationDisplay();
@@ -45,7 +46,6 @@ export class Simulation {
 
         updateMap(this.countries);
         refreshMap(this.countries, this.countryManager);
-        // updateColours(svg, this.countries, colorScale);
     }
 
     getRandomColor() {
@@ -59,16 +59,12 @@ export class Simulation {
 
     runTimestep() {
         this.processTurn();
-        // If day is multiple of 20 say so
         if (this.numDays % 20 === 0) {
             console.log(`Day ${this.numDays}`);
         }
-
     }
 
     runSimulation() {
-        // Logic to run the entire simulation
-        // This could involve running multiple timesteps, updating the display, etc.
         this.initialiseSimulation();
         this.updateCountries();
         this.updateRankingTable();
@@ -98,27 +94,18 @@ export class Simulation {
     }
 
     invade(target) {
-        // console.log(`${this.name} is invading ${target.name}.`);
-        // Determine the probability of the weaker opponent winning
         const winProbability = 0.3; // 30% chance the weaker opponent wins
 
         if (Math.random() < winProbability) {
-            // Weaker opponent wins
             console.log(`${target.name} successfully defended against ${this.name}.`);
-            // Reduce the invader's military strength
             this.militaryStrength -= Math.floor(target.militaryStrength / 2);
             if (this.militaryStrength < 0) this.militaryStrength = 0;
         } else {
-            // Invader wins
-            // Add target's military strength to this country's military strength
             this.militaryStrength += target.militaryStrength;
-            // Set target's military strength to zero
             target.militaryStrength = 0;
-            // Target is now a vassal of this country
             target.setOverlord(this);
-            // Add target's bordering countries to this country's bordering countries
             target.borderingCountries.forEach(country => {
-                if (country !== this) { // Avoid adding itself as a bordering country
+                if (country !== this) {
                     this.borderingCountries.add(country);
                 }
             });
@@ -127,18 +114,12 @@ export class Simulation {
 
     updateRankingTable() {
         const countries = this.countryManager.getAllCountries();
-        // Sort by rank (wealth)
         countries.sort((a, b) => b.wealth - a.wealth);
     
         const tbody = d3.select("#ranking-table tbody");
+        const rows = tbody.selectAll("tr").data(countries, d => d.countryCode);
     
-        // Bind the sorted data
-        const rows = tbody.selectAll("tr")
-            .data(countries, d => d.countryCode);
-    
-        // Enter new rows
         const rowsEnter = rows.enter().append("tr");
-    
         rowsEnter.append("td").attr("class", "rank");
         rowsEnter.append("td").attr("class", "country");
         rowsEnter.append("td").attr("class", "wealth");
@@ -146,11 +127,9 @@ export class Simulation {
         rowsEnter.append("td").attr("class", "population");
         rowsEnter.append("td").attr("class", "vassals");
         rowsEnter.append("td").attr("class", "land-area");
+        rowsEnter.append("td").attr("class", "ally-symbol");
     
-        // Update existing rows
         const rowsUpdate = rowsEnter.merge(rows);
-    
-        // Reorder and style rows
         rowsUpdate.order()
             .transition()
             .duration(500)
@@ -163,9 +142,15 @@ export class Simulation {
         rowsUpdate.select(".population").text(d => d.population.toLocaleString());
         rowsUpdate.select(".vassals").text(d => Array.isArray(d.vassals) ? d.vassals.map(v => v.name).join(", ") : "");
         rowsUpdate.select(".land-area").text("N/A");
+        rowsUpdate.select(".ally-symbol").html(d => {
+            const us = this.countryManager.getCountryByCode("US");
+            const canada = this.countryManager.getCountryByCode("CA");
+            if ((d.countryCode === "US" && us.allies.has(canada)) || (d.countryCode === "CA" && canada.allies.has(us))) {
+                return '<span class="ally-symbol">🤝</span>';
+            }
+            return '';
+        });
     
-        // Remove old rows
         rows.exit().remove();
     }
-    
 }

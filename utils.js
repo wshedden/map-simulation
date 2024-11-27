@@ -79,7 +79,6 @@ export function handleMouseOver(event, d, countryManager) {
         Wealth: ${getValueOrNone(countryDetails.Wealth)}<br>
         Vassals: ${getValueOrNone(countryDetails.Vassals)}<br>
         Overlord: ${getValueOrNone(countryDetails.Overlord)}<br>
-        Bordering Countries: ${getValueOrNone(countryDetails.BorderingCountries)}<br>
         Allies: ${getValueOrNone(countryDetails.Allies)}<br>
     `)
     .style("left", `${event.pageX + 10}px`)
