@@ -182,13 +182,3 @@ function formatTo3SF(number) {
 
 export { Country };
 
-/* These are the attributes it needs to make a decision
-wealth
-aggressionLevel
-diplomaticRelations (set of pairs like "CN" : 4) where:
-max is 10 (above 8 is allied)
-min is -10 (below -8 is at war)
-above 3 means there are trade relations
-above 6 means good trade relations
-
-*/

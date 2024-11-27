@@ -113,31 +113,77 @@ export function updateMap(countries) {
 }
 
 export function refreshMap(countries, countryManager) {
-    // Remove existing alliance symbols
+    // Remove existing alliance and war symbols
     svg.selectAll(".alliance-symbol").remove();
+    svg.selectAll(".war-symbol").remove();
+    svg.selectAll(".war-line").remove();
 
     // Add alliance symbol only for allies
     countries.forEach(country => {
         const simCountry = countryManager.getCountryByCode(country.properties.Code);
-        if (simCountry && simCountry.allies.size > 0) {
+        if (simCountry) {
             const centroid = path.centroid(country);
-            svg.append("g")
-                .attr("class", "alliance-symbol")
-                .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
-                .append("circle")
-                .attr("r", 10)
-                .attr("fill", "blue");
 
-            svg.append("g")
-                .attr("class", "alliance-symbol")
-                .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
-                .append("text")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("dy", ".35em")
-                .attr("text-anchor", "middle")
-                .attr("fill", "white")
-                .text("A");
+            if (simCountry.allies.size > 0) {
+                svg.append("g")
+                    .attr("class", "alliance-symbol")
+                    .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
+                    .append("circle")
+                    .attr("r", 10)
+                    .attr("fill", "blue");
+
+                svg.append("g")
+                    .attr("class", "alliance-symbol")
+                    .attr("transform", `translate(${centroid[0]}, ${centroid[1]})`)
+                    .append("text")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("dy", ".35em")
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "white")
+                    .text("A");
+            }
+
+            if (simCountry.isAtWar()) {
+                svg.append("g")
+                    .attr("class", "war-symbol")
+                    .attr("transform", `translate(${centroid[0] + 15}, ${centroid[1]})`)
+                    .append("circle")
+                    .attr("r", 10)
+                    .attr("fill", "red");
+
+                svg.append("g")
+                    .attr("class", "war-symbol")
+                    .attr("transform", `translate(${centroid[0] + 15}, ${centroid[1]})`)
+                    .append("text")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .attr("dy", ".35em")
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "white")
+                    .text("W");
+
+                // Draw lines to countries at war
+                simCountry.wars.forEach(war => {
+                    war.belligerents.forEach(belligerent => {
+                        if (belligerent !== simCountry) {
+                            const enemyCountry = countries.find(c => countryManager.getCountryByCode(c.properties.Code) === belligerent);
+                            if (enemyCountry) {
+                                const enemyCentroid = path.centroid(enemyCountry);
+                                svg.append("line")
+                                    .attr("class", "war-line")
+                                    .attr("x1", centroid[0])
+                                    .attr("y1", centroid[1])
+                                    .attr("x2", enemyCentroid[0])
+                                    .attr("y2", enemyCentroid[1])
+                                    .attr("stroke", "red")
+                                    .attr("stroke-width", 2)
+                                    .attr("stroke-dasharray", "5,5");
+                            }
+                        }
+                    });
+                });
+            }
         }
     });
 }
